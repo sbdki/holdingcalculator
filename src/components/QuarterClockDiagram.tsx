@@ -96,7 +96,7 @@ const QuarterClockDiagram = ({ windDirection, outboundCourse, angleWindToCourse,
           {/* Clock circle outline */}
           <circle cx="120" cy="120" r="100" fill="none" stroke="#9ca3af" strokeWidth="2" className="dark:stroke-neutral-600" />
 
-          {/* Cardinal direction markers */}
+          {/* Cardinal direction markers - only show quarter */}
           <g className="fill-gray-700 dark:fill-gray-300">
             {/* 0° - North (top) */}
             <text x="120" y="22" textAnchor="middle" className="text-sm font-bold">0°</text>
@@ -108,12 +108,23 @@ const QuarterClockDiagram = ({ windDirection, outboundCourse, angleWindToCourse,
             <text x="25" y="125" textAnchor="middle" className="text-sm font-bold">270°</text>
           </g>
 
-          {/* Intermediate angle markers */}
-          <g className="fill-gray-500 dark:fill-gray-400 text-xs">
-            <text x="188" y="52" textAnchor="middle">45°</text>
-            <text x="188" y="198" textAnchor="middle">135°</text>
-            <text x="52" y="198" textAnchor="middle">225°</text>
-            <text x="52" y="52" textAnchor="middle">315°</text>
+          {/* Quarter-clock labels (15°, 45°, 75° marks) */}
+          <g className="fill-gray-700 dark:fill-gray-300 text-xs font-semibold" transform={`rotate(${normCourse}, 120, 120)`}>
+            {/* 15° mark - rotated with course */}
+            <text x="190" y="70" textAnchor="middle">
+              <tspan x="190" dy="0">15°</tspan>
+              <tspan x="190" dy="12">3/4</tspan>
+            </text>
+            {/* 45° mark */}
+            <text x="200" y="120" textAnchor="middle">
+              <tspan x="200" dy="0">45°</tspan>
+              <tspan x="200" dy="12">1/2</tspan>
+            </text>
+            {/* 75° mark */}
+            <text x="190" y="170" textAnchor="middle">
+              <tspan x="190" dy="0">75°</tspan>
+              <tspan x="190" dy="12">1/4</tspan>
+            </text>
           </g>
 
           {/* Center circle */}
@@ -131,8 +142,14 @@ const QuarterClockDiagram = ({ windDirection, outboundCourse, angleWindToCourse,
               strokeLinecap="round"
               strokeDasharray="6,4"
             />
+            {/* Outbound label on the line */}
             <text x="120" y="18" textAnchor="middle" className="text-xs font-bold fill-green-600 dark:fill-green-400">
-              OUTBOUND
+              <tspan x="120" dy="0">OUTBOUND</tspan>
+            </text>
+            {/* Full label at 0° */}
+            <text x="120" y="38" textAnchor="middle" className="text-xs font-bold fill-gray-700 dark:fill-gray-300">
+              <tspan x="120" dy="0">Full</tspan>
+              <tspan x="120" dy="12">60s</tspan>
             </text>
           </g>
           
@@ -158,9 +175,6 @@ const QuarterClockDiagram = ({ windDirection, outboundCourse, angleWindToCourse,
               WIND
             </text>
           </g>
-          
-          {/* Center label */}
-          <text x="120" y="125" textAnchor="middle" className="text-xs font-bold fill-white">CENTER</text>
         </svg>
 
       </div>
