@@ -135,12 +135,12 @@ const HoldingCalculator = () => {
               >
                 <div className="text-sm leading-relaxed text-gray-700 dark:text-neutral-200">
                   <div className="border border-gray-200 dark:border-neutral-600 rounded-xl p-5">
-                    <h3 className="mt-0 mb-3 text-lg font-semibold">Simple Calculation</h3>
+                    <h3 className="mt-0 mb-3 text-lg font-semibold">Simple calculation</h3>
                     <div className="bg-gray-50 dark:bg-neutral-800/50 p-4 rounded-lg space-y-1">
                       <div>Inbound Course = {Math.round(normalizeAngle(inboundCourseNum || 0))}°</div>
                       <div className="pt-2">Outbound Course = Inbound Course {inboundCourseNum < 180 ? '+' : '-'} 180°</div>
                       <div>= {Math.round(normalizeAngle(inboundCourseNum || 0))}° {inboundCourseNum < 180 ? '+' : '-'} 180°</div>
-                      <div className="pt-2">= <strong className="text-xl">{Math.round(results.outboundCourse)}°M</strong></div>
+                      <div className="pt-2">= <strong>{Math.round(results.outboundCourse)}°M</strong></div>
                     </div>
                   </div>
                 </div>
@@ -167,7 +167,7 @@ const HoldingCalculator = () => {
                   return (
                     <div className="text-sm leading-relaxed text-gray-700 dark:text-neutral-200 space-y-4">
                       <div className="border border-gray-200 dark:border-neutral-600 rounded-xl p-5 mb-4">
-                        <h3 className="mt-0 mb-3 text-lg font-semibold">STEP 1 — Determine Closest Leg</h3>
+                        <h3 className="mt-0 mb-3 text-lg font-semibold">Step 1 — Determine closest leg</h3>
                         <div className="bg-gray-50 dark:bg-neutral-800/50 p-4 rounded-lg space-y-1">
                           <div><strong>Wind:</strong> {Math.round(normalizeAngle(windDirNum || 0))}° at {Math.round(windSpdNum)} kt</div>
                           <div><strong>Inbound course:</strong> {Math.round(normalizeAngle(inboundCourseNum || 0))}°</div>
@@ -175,13 +175,13 @@ const HoldingCalculator = () => {
                           <div className="pt-2">Angle to inbound: {Math.round(results.driftAngleToInbound)}°</div>
                           <div>Angle to outbound: <strong>{Math.round(results.driftAngleToOutbound)}°</strong></div>
                           <div className="pt-2">➜ <strong>Use {results.driftUsedLeg} leg (smaller angle)</strong></div>
-                          <div className="text-sm text-gray-600 dark:text-neutral-400 pt-1">(Relative angle = angle between wind and chosen leg)</div>
+                          <div className="pt-2">Relative angle = {Math.round(results.driftRelativeAngle)}°</div>
                         </div>
                       </div>
                       
                       <div className="border border-gray-200 dark:border-neutral-600 rounded-xl p-5 mb-4">
-                        <h3 className="mt-0 mb-3 text-lg font-semibold">STEP 2 — Apply Clock System</h3>
-                        <div className="bg-blue-50 dark:bg-blue-950/30 p-4 rounded-lg">
+                        <h3 className="mt-0 mb-3 text-lg font-semibold">Step 2 — Apply clock system</h3>
+                        <div className="bg-gray-50 dark:bg-neutral-800/50 p-4 rounded-lg">
                           <div className="mb-3"><strong>Clock rules:</strong></div>
                           <div className="space-y-0.5">
                             <div>15° → ¼ crosswind</div>
@@ -197,12 +197,12 @@ const HoldingCalculator = () => {
                       </div>
                       
                       <div className="border border-gray-200 dark:border-neutral-600 rounded-xl p-5">
-                        <h3 className="mt-0 mb-3 text-lg font-semibold">STEP 3 — Compute Drift</h3>
+                        <h3 className="mt-0 mb-3 text-lg font-semibold">Step 3 — Compute drift</h3>
                         <div className="bg-gray-50 dark:bg-neutral-800/50 p-4 rounded-lg space-y-1">
-                          <div>Drift formula: <code className="bg-gray-200 dark:bg-neutral-700 px-1.5 py-0.5 rounded text-sm">(60 × crosswind) ÷ TAS</code></div>
+                          <div>Drift formula: (60 × crosswind) ÷ TAS</div>
                           <div className="pt-2">= (60 × {Math.round(results.driftCrosswind)}) ÷ {Math.round(tasNum)}</div>
                           <div>= {Math.round(60 * results.driftCrosswind)} ÷ {Math.round(tasNum)}</div>
-                          <div className="pt-2">= <strong className="text-xl">{Math.round(results.singleDrift)}° drift</strong></div>
+                          <div className="pt-2">= <strong>{Math.round(results.singleDrift)}° drift</strong></div>
                         </div>
                       </div>
                     </div>
@@ -220,7 +220,7 @@ const HoldingCalculator = () => {
               >
                 <div className="text-sm leading-relaxed text-gray-700 dark:text-neutral-200">
                   <div className="border border-gray-200 dark:border-neutral-600 rounded-xl p-5 mb-4">
-                    <h3 className="mt-0 mb-3 text-lg font-semibold">STEP 1 — Convert TAS</h3>
+                    <h3 className="mt-0 mb-3 text-lg font-semibold">Step 1 — Convert TAS</h3>
                     <div className="bg-gray-50 dark:bg-neutral-800/50 p-4 rounded-lg space-y-1">
                       <div>TAS = {Math.round(tasNum)} kt</div>
                       <div>TAS (NM/min) = TAS ÷ 60</div>
@@ -230,13 +230,13 @@ const HoldingCalculator = () => {
                   </div>
                   
                   <div className="border border-gray-200 dark:border-neutral-600 rounded-xl p-5">
-                    <h3 className="mt-0 mb-3 text-lg font-semibold">STEP 2 — Calculate Max Drift</h3>
+                    <h3 className="mt-0 mb-3 text-lg font-semibold">Step 2 — Calculate max drift</h3>
                     <div className="bg-gray-50 dark:bg-neutral-800/50 p-4 rounded-lg space-y-1">
                       <div>Wind Speed = {Math.round(windSpdNum)} kt</div>
                       <div className="pt-2">Max Drift = Wind Speed ÷ TAS(NM/min)</div>
                       <div>= {Math.round(windSpdNum)} ÷ {(tasNum / 60).toFixed(2)}</div>
-                      <div className="pt-2">= <strong className="text-xl">{Math.round(results.maxDrift)}° drift</strong></div>
-                      <div className="text-sm text-gray-600 dark:text-neutral-400 pt-2">
+                      <div className="pt-2">= <strong>{Math.round(results.maxDrift)}° drift</strong></div>
+                      <div className="text-gray-600 dark:text-neutral-400 pt-2">
                         → Maximum drift if wind was 90° crosswind
                       </div>
                     </div>
@@ -260,7 +260,7 @@ const HoldingCalculator = () => {
                   return (
                     <div className="text-sm leading-relaxed text-gray-700 dark:text-neutral-200">
                       <div className="border border-gray-200 dark:border-neutral-600 rounded-xl p-5 mb-4">
-                        <h3 className="mt-0 mb-3 text-lg font-semibold">STEP 1 — Wind Side</h3>
+                        <h3 className="mt-0 mb-3 text-lg font-semibold">Step 1 — Wind side</h3>
                         <div className="bg-gray-50 dark:bg-neutral-800/50 p-4 rounded-lg space-y-1">
                           <div><strong>Wind Direction:</strong> {Math.round(normalizeAngle(windDirNum || 0))}°M</div>
                           <div><strong>Inbound Course:</strong> {Math.round(inboundNorm)}°M</div>
@@ -271,11 +271,11 @@ const HoldingCalculator = () => {
                       </div>
                       
                       <div className="border border-gray-200 dark:border-neutral-600 rounded-xl p-5">
-                        <h3 className="mt-0 mb-3 text-lg font-semibold">STEP 2 — Apply Drift Correction</h3>
+                        <h3 className="mt-0 mb-3 text-lg font-semibold">Step 2 — Apply drift correction</h3>
                         <div className="bg-gray-50 dark:bg-neutral-800/50 p-4 rounded-lg space-y-1">
                           <div>Inbound Heading = Inbound Course {op} Single Drift</div>
                           <div>= {Math.round(inboundNorm)}° {op} {Math.round(results.singleDrift)}°</div>
-                          <div className="pt-2">= <strong className="text-xl">{Math.round(results.inboundHeading)}°M</strong></div>
+                          <div className="pt-2">= <strong>{Math.round(results.inboundHeading)}°M</strong></div>
                         </div>
                       </div>
                     </div>
@@ -301,7 +301,7 @@ const HoldingCalculator = () => {
                   return (
                     <div className="text-sm leading-relaxed text-gray-700 dark:text-neutral-200">
                       <div className="border border-gray-200 dark:border-neutral-600 rounded-xl p-5 mb-4">
-                        <h3 className="mt-0 mb-3 text-lg font-semibold">STEP 1 — Wind Side</h3>
+                        <h3 className="mt-0 mb-3 text-lg font-semibold">Step 1 — Wind side</h3>
                         <div className="bg-gray-50 dark:bg-neutral-800/50 p-4 rounded-lg space-y-1">
                           <div><strong>Wind Direction:</strong> {Math.round(normalizeAngle(windDirNum || 0))}°M</div>
                           <div><strong>Outbound Course:</strong> {Math.round(outboundCourseCalc)}°M</div>
@@ -312,7 +312,7 @@ const HoldingCalculator = () => {
                       </div>
                       
                       <div className="border border-gray-200 dark:border-neutral-600 rounded-xl p-5 mb-4">
-                        <h3 className="mt-0 mb-3 text-lg font-semibold">STEP 2 — Calculate Triple Drift</h3>
+                        <h3 className="mt-0 mb-3 text-lg font-semibold">Step 2 — Calculate triple drift</h3>
                         <div className="bg-gray-50 dark:bg-neutral-800/50 p-4 rounded-lg space-y-1">
                           <div>Outbound Drift = 3 × Single Drift</div>
                           <div>= 3 × {Math.round(results.singleDrift)}°</div>
@@ -321,11 +321,11 @@ const HoldingCalculator = () => {
                       </div>
                       
                       <div className="border border-gray-200 dark:border-neutral-600 rounded-xl p-5">
-                        <h3 className="mt-0 mb-3 text-lg font-semibold">STEP 3 — Apply Drift Correction</h3>
+                        <h3 className="mt-0 mb-3 text-lg font-semibold">Step 3 — Apply drift correction</h3>
                         <div className="bg-gray-50 dark:bg-neutral-800/50 p-4 rounded-lg space-y-1">
                           <div>Outbound Heading = Outbound Course {op} Outbound Drift</div>
                           <div>= {Math.round(outboundCourseCalc)}° {op} {Math.round(outboundDrift)}°</div>
-                          <div className="pt-2">= <strong className="text-xl">{Math.round(results.outboundHeading)}°M</strong></div>
+                          <div className="pt-2">= <strong>{Math.round(results.outboundHeading)}°M</strong></div>
                         </div>
                       </div>
                     </div>
@@ -345,7 +345,6 @@ const HoldingCalculator = () => {
                   const absLegDiff = results.outboundAngleFromTrack;
                   const isHeadwind = absLegDiff <= 90;
                   const component = results.headTailComponentKt;
-                  const adjustment = isHeadwind ? component : -component;
                   
                   // Calculate angle for quarter-clock (WIND to COURSE, not nose!)
                   const angleWindToCourse = absLegDiff <= 90 ? absLegDiff : 180 - absLegDiff;
@@ -363,7 +362,7 @@ const HoldingCalculator = () => {
                   return (
                     <div className="text-sm leading-relaxed text-gray-700 dark:text-neutral-200">
                       <div className="border border-gray-200 dark:border-neutral-600 rounded-xl p-5 mb-4">
-                        <h3 className="mt-0 mb-3 text-lg font-semibold">STEP 1 — Wind Angle</h3>
+                        <h3 className="mt-0 mb-3 text-lg font-semibold">Step 1 — Wind angle</h3>
                         <div className="bg-gray-50 dark:bg-neutral-800/50 p-4 rounded-lg space-y-1">
                           <div><strong>Wind Direction:</strong> {Math.round(normalizeAngle(windDirNum || 0))}°</div>
                           <div><strong>Outbound Course:</strong> {Math.round(results.outboundCourse)}°</div>
@@ -383,8 +382,8 @@ const HoldingCalculator = () => {
                       </div>
 
                       <div className="border border-gray-200 dark:border-neutral-600 rounded-xl p-5 mb-4">
-                        <h3 className="mt-0 mb-3 text-lg font-semibold">STEP 2 — Quarter-Clock Method</h3>
-                        <div className="bg-blue-50 dark:bg-blue-950/30 p-4 rounded-lg">
+                        <h3 className="mt-0 mb-3 text-lg font-semibold">Step 2 — Quarter-clock method</h3>
+                        <div className="bg-gray-50 dark:bg-neutral-800/50 p-4 rounded-lg">
                           <div className="mb-3"><strong>Clock rules:</strong></div>
                           <div className="space-y-0.5">
                             <div>• 0–15° from track → 100% component (×1.0)</div>
@@ -399,7 +398,7 @@ const HoldingCalculator = () => {
                             <div>= {Math.round(windSpdNum)} × {factor.toFixed(2)}</div>
                             <div>= <strong>{Math.round(component)} kt</strong></div>
                           </div>
-                          <div className="pt-3 text-sm text-gray-600 dark:text-neutral-400">
+                          <div className="pt-3 text-gray-600 dark:text-neutral-400">
                             {isHeadwind 
                               ? '→ Headwind: Cover less ground, fly longer' 
                               : '→ Tailwind: Cover more ground, fly shorter'}
@@ -408,12 +407,12 @@ const HoldingCalculator = () => {
                       </div>
 
                       <div className="border border-gray-200 dark:border-neutral-600 rounded-xl p-5">
-                        <h3 className="mt-0 mb-3 text-lg font-semibold">STEP 3 — Adjust Timing</h3>
+                        <h3 className="mt-0 mb-3 text-lg font-semibold">Step 3 — Adjust timing</h3>
                         <div className="bg-gray-50 dark:bg-neutral-800/50 p-4 rounded-lg space-y-1">
                           <div>Standard outbound time = 60 seconds</div>
-                          <div>Wind effect = {adjustment >= 0 ? '+' : ''}{Math.round(adjustment)} seconds</div>
-                          <div className="pt-2">Final time = 60 {adjustment >= 0 ? '+' : ''} ({Math.round(adjustment)})</div>
-                          <div className="pt-2">= <strong className="text-xl">{results.outboundTime} seconds</strong></div>
+                          <div>Wind effect = {isHeadwind ? '+' : '-'}{Math.round(Math.abs(component))} seconds</div>
+                          <div className="pt-2">Final time = 60 {isHeadwind ? '-' : '+'} {Math.round(Math.abs(component))}</div>
+                          <div className="pt-2">= <strong>{results.outboundTime} seconds</strong></div>
                         </div>
                       </div>
                     </div>
