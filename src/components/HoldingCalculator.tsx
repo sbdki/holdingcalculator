@@ -233,17 +233,42 @@ const HoldingCalculator = () => {
                 value={`${results.outboundTime} s`}
                 expanded={!!expanded.outboundTime}
                 onToggle={() => toggleExpanded("outboundTime")}
-                subtitle="Starts from 60 s and is adjusted using a quarter-clock estimate of the head/tailwind component."
+                subtitle="How long to fly outbound before turning back."
               >
-                <div className="text-sm leading-relaxed text-gray-700 dark:text-neutral-200 space-y-1 font-mono">
-                  <div>|Wind - Outbound Course| = {results.outboundAngleFromTrack.toFixed(1)}°</div>
-                  <div>Angle From Nose = min(Δ, 180° - Δ) → 0–90°</div>
-                  <div>Quarter-Clock Factor → Head/Tail Component ≈ {results.headTailComponentKt.toFixed(1)} kt</div>
-                  <div className="pt-2 text-xs">If component is headwind → subtract seconds from 60</div>
-                  <div className="text-xs">If component is tailwind → add seconds to 60</div>
-                  <div className="pt-2">Outbound Time ≈ 60 s − signed(head/tail component in kt)</div>
-                  <div className="pl-4">≈ {results.outboundTime} s (clamped to [10, 180])</div>
-                </div>
+                {(() => {
+                  const absLegDiff = results.outboundAngleFromTrack;
+                  const isHeadwind = absLegDiff <= 90;
+                  const component = results.headTailComponentKt;
+                  
+                  return (
+                    <div className="text-sm leading-relaxed text-gray-700 dark:text-neutral-200 space-y-3">
+                      <div className="space-y-1">
+                        <div className="font-semibold">Step 1: Check the wind angle</div>
+                        <div>Wind angle to outbound track: {absLegDiff.toFixed(0)}°</div>
+                        <div className="text-gray-600 dark:text-neutral-400">
+                          {isHeadwind ? '→ This is a headwind (slows you down)' : '→ This is a tailwind (speeds you up)'}
+                        </div>
+                      </div>
+
+                      <div className="space-y-1">
+                        <div className="font-semibold">Step 2: Estimate wind effect</div>
+                        <div>Wind pushing you: ~{component.toFixed(0)} knots</div>
+                        <div className="text-gray-600 dark:text-neutral-400">
+                          {isHeadwind 
+                            ? '→ You\'ll cover less ground, so fly longer' 
+                            : '→ You\'ll cover more ground, so fly shorter'}
+                        </div>
+                      </div>
+
+                      <div className="space-y-1">
+                        <div className="font-semibold">Step 3: Adjust your timing</div>
+                        <div>Standard time: 60 seconds</div>
+                        <div>{isHeadwind ? 'Add' : 'Subtract'} wind effect: {isHeadwind ? '+' : '-'}{Math.abs(component).toFixed(0)} seconds</div>
+                        <div className="font-semibold text-base pt-1">Final time: {results.outboundTime} seconds</div>
+                      </div>
+                    </div>
+                  );
+                })()}
               </ResultCard>
             </div>
           )}
