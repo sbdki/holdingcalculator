@@ -77,7 +77,7 @@ const HoldingCalculator = () => {
         {/* Header with Theme Toggle */}
         <header className="flex items-center justify-between gap-4">
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 dark:text-neutral-50">
-            Holding Calculator
+            Holding Heading Calculator
           </h1>
           <ThemeToggle />
         </header>
@@ -191,8 +191,14 @@ const HoldingCalculator = () => {
                           </div>
                           <div className="pt-3 space-y-1">
                             <div>Relative angle: <strong>{Math.round(results.driftRelativeAngle)}° → {clockLabel.replace(/\s*\(.*?\)/, '')}</strong></div>
-                            <div className="pt-2">Crosswind = {Math.round(windSpdNum)} kt × {(results.driftCrosswind / windSpdNum).toFixed(2)}</div>
-                            <div>= <strong>{Math.round(results.driftCrosswind)} kt</strong></div>
+                            {(results.driftCrosswind / windSpdNum) === 1.0 ? (
+                              <div className="pt-2">Crosswind = <strong>{Math.round(results.driftCrosswind)} kt</strong></div>
+                            ) : (
+                              <>
+                                <div className="pt-2">Crosswind = {Math.round(windSpdNum)} kt × {(results.driftCrosswind / windSpdNum).toFixed(2)}</div>
+                                <div>= <strong>{Math.round(results.driftCrosswind)} kt</strong></div>
+                              </>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -397,8 +403,14 @@ const HoldingCalculator = () => {
                           <div className="pt-3 space-y-1">
                             <div>Angle = {Math.round(angleWindToCourse)}° → {factorLabel.replace(/\s*\(.*?\)/, '')}</div>
                             <div>Wind Speed = {Math.round(windSpdNum)} kt</div>
-                            <div className="pt-2">Crosswind = {Math.round(windSpdNum)} × {factor.toFixed(2)}</div>
-                            <div>= <strong>{Math.round(component)} kt</strong></div>
+                            {factor === 1.0 ? (
+                              <div className="pt-2">Crosswind = <strong>{Math.round(component)} kt</strong></div>
+                            ) : (
+                              <>
+                                <div className="pt-2">Crosswind = {Math.round(windSpdNum)} × {factor.toFixed(2)}</div>
+                                <div>= <strong>{Math.round(component)} kt</strong></div>
+                              </>
+                            )}
                           </div>
                         </div>
                       </div>
