@@ -1,10 +1,10 @@
 # Holding Calculator
 
-**Version 1.0.0**
+**Version 1.1.0**
 
 An interactive aviation holding pattern wind correction calculator built with React, TypeScript, and Tailwind CSS. Calculate drift angles, corrected headings, and outbound timing for holding patterns with detailed mathematical breakdowns.
 
-![Holding Calculator](https://img.shields.io/badge/version-1.0.0-blue.svg)
+![Holding Calculator](https://img.shields.io/badge/version-1.1.0-blue.svg)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.2-blue)
 ![React](https://img.shields.io/badge/React-18.2-61dafb)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
@@ -15,7 +15,8 @@ An interactive aviation holding pattern wind correction calculator built with Re
 
 - **Real-time Calculations**: Instant computation of holding pattern corrections
 - **Interactive Math Breakdowns**: Expandable cards showing step-by-step formulas
-- **Dark Mode Support**: Automatic dark/light theme switching
+- **Light/Dark Theme Toggle**: Manual theme switching with localStorage persistence
+- **System Theme Detection**: Automatically detects and applies system preference
 - **Responsive Design**: Works seamlessly on desktop, tablet, and mobile
 - **Input Validation**: Clear error messages for invalid inputs
 - **Aviation Standard**: Uses industry-standard quarter-clock method and triple drift technique
@@ -68,6 +69,40 @@ npm run preview
 
 ---
 
+## 🌐 Deployment
+
+### Render.com (Recommended)
+
+This project includes a `render.yaml` configuration for easy deployment:
+
+1. **Connect your GitHub repository** to Render
+2. Render will auto-detect the `render.yaml` file
+3. Click "Apply" and your app will deploy automatically
+
+**Manual Configuration:**
+- **Environment**: Static Site
+- **Build Command**: `npm install && npm run build`
+- **Publish Directory**: `dist`
+- **Node Version**: 18 (set `NODE_VERSION=18` in environment variables)
+
+### Other Platforms
+
+**Vercel:**
+```bash
+npm install -g vercel
+vercel
+```
+
+**Netlify:**
+- Build Command: `npm run build`
+- Publish Directory: `dist`
+
+**GitHub Pages:**
+- Update `vite.config.ts` with base path
+- Build and deploy `dist/` folder
+
+---
+
 ## 📖 Usage
 
 ### Basic Workflow
@@ -81,6 +116,8 @@ npm run preview
 2. **Click CALCULATE**: Results appear instantly below the input section
 
 3. **Expand Math Details**: Click "Show math" on any result card to see the complete calculation breakdown
+
+4. **Toggle Theme**: Click the sun/moon icon in the header to switch between light and dark modes
 
 ### Example
 
@@ -108,7 +145,10 @@ holdingcalculator/
 │   ├── components/          # React components
 │   │   ├── HoldingCalculator.tsx  # Main calculator component
 │   │   ├── InputField.tsx         # Reusable input field
-│   │   └── ResultCard.tsx         # Expandable result display
+│   │   ├── ResultCard.tsx         # Expandable result display
+│   │   └── ThemeToggle.tsx        # Theme switcher button
+│   ├── contexts/            # React contexts
+│   │   └── ThemeContext.tsx       # Theme state management
 │   ├── utils/               # Utility functions
 │   │   └── calculations.ts        # Core calculation logic
 │   ├── types/               # TypeScript type definitions
@@ -123,6 +163,7 @@ holdingcalculator/
 ├── tsconfig.json            # TypeScript configuration
 ├── vite.config.ts           # Vite bundler configuration
 ├── tailwind.config.js       # Tailwind CSS configuration
+├── render.yaml              # Render deployment config
 └── README.md                # This file
 ```
 
@@ -130,6 +171,7 @@ holdingcalculator/
 
 - **`src/utils/calculations.ts`**: All mathematical functions for holding pattern calculations
 - **`src/components/HoldingCalculator.tsx`**: Main UI logic and state management
+- **`src/contexts/ThemeContext.tsx`**: Theme management with localStorage persistence
 - **`src/types/index.ts`**: TypeScript interfaces for type safety
 
 ---
