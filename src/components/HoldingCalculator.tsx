@@ -3,6 +3,7 @@ import InputField from "./InputField";
 import ResultCard from "./ResultCard";
 import ThemeToggle from "./ThemeToggle";
 import Footer from "./Footer";
+import QuarterClockDiagram from "./QuarterClockDiagram";
 import { calculateHoldingPattern, normalizeAngle, signedAngleDiff } from "../utils/calculations";
 import type { HoldingResults } from "../types";
 
@@ -235,23 +236,6 @@ const HoldingCalculator = () => {
                   // Calculate angle from nose (for quarter-clock)
                   const angleFromNose = absLegDiff <= 90 ? absLegDiff : 180 - absLegDiff;
                   
-                  // Determine which quarter-clock band
-                  let band = '';
-                  let factor = 0;
-                  if (angleFromNose < 15) {
-                    band = '0–15°';
-                    factor = 1.0;
-                  } else if (angleFromNose < 45) {
-                    band = '15–45°';
-                    factor = 0.75;
-                  } else if (angleFromNose < 75) {
-                    band = '45–75°';
-                    factor = 0.5;
-                  } else {
-                    band = '75–90°';
-                    factor = 0.25;
-                  }
-                  
                   return (
                     <div className="text-sm leading-relaxed text-gray-700 dark:text-neutral-200 space-y-4">
                       <div className="space-y-2">
@@ -274,32 +258,18 @@ const HoldingCalculator = () => {
 
                       <div className="space-y-2">
                         <div className="font-semibold text-base">Step 2: Use the Quarter-Clock Method</div>
-                        <div className="text-gray-600 dark:text-neutral-400 text-sm">
+                        <div className="text-gray-600 dark:text-neutral-400 text-sm mb-3">
                           A pilot trick to estimate wind effect based on angle:
                         </div>
-                        <div className="space-y-1 text-sm">
-                          <div className={angleFromNose < 15 ? 'font-semibold text-blue-600 dark:text-blue-400' : ''}>
-                            • 0–15° from nose → 100% of wind (×1.0)
-                          </div>
-                          <div className={angleFromNose >= 15 && angleFromNose < 45 ? 'font-semibold text-blue-600 dark:text-blue-400' : ''}>
-                            • 15–45° from nose → 75% of wind (×0.75)
-                          </div>
-                          <div className={angleFromNose >= 45 && angleFromNose < 75 ? 'font-semibold text-blue-600 dark:text-blue-400' : ''}>
-                            • 45–75° from nose → 50% of wind (×0.5)
-                          </div>
-                          <div className={angleFromNose >= 75 ? 'font-semibold text-blue-600 dark:text-blue-400' : ''}>
-                            • 75–90° from nose → 25% of wind (×0.25)
-                          </div>
-                        </div>
-                        <div className="pt-2">
-                          <div>Your angle: {angleFromNose.toFixed(0)}° falls in the <span className="font-semibold">{band}</span> range</div>
-                          <div>So we use the factor: <span className="font-semibold">×{factor}</span></div>
-                        </div>
-                        <div className="pt-2">
-                          <div>Wind effect calculation:</div>
-                          <div className="pl-4">{windSpdNum.toFixed(0)} knots × {factor} = {component.toFixed(0)} knots</div>
-                        </div>
-                        <div className="text-gray-600 dark:text-neutral-400">
+                        
+                        {/* Visual Clock Diagram */}
+                        <QuarterClockDiagram 
+                          angleFromNose={angleFromNose}
+                          windSpeed={windSpdNum}
+                          component={component}
+                        />
+                        
+                        <div className="pt-2 text-gray-600 dark:text-neutral-400">
                           {isHeadwind 
                             ? '→ Headwind: You\'ll cover less ground, so fly longer' 
                             : '→ Tailwind: You\'ll cover more ground, so fly shorter'}
