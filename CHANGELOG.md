@@ -5,6 +5,30 @@ All notable changes to the Holding Calculator project will be documented in this
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2025-11-16
+
+### Added
+- **Theme toggle button** with light/dark mode switching
+- **ThemeContext** for global theme state management
+- **ThemeToggle component** with animated sun/moon icons
+- **localStorage persistence** for theme preference
+- **System preference detection** on initial load
+
+### Changed
+- **Updated color scheme** to match consistent gray/neutral palette:
+  - Light mode: `bg-gray-100`, `bg-white`, `text-gray-800`
+  - Dark mode: `bg-neutral-700/30`, `dark:bg-slate-950`, `text-neutral-200`
+- **Button styling** updated to black/white contrast (`bg-black text-white` / `dark:bg-white dark:text-black`)
+- **Focus rings** changed from blue to gray for consistency
+- **Border radius** standardized to `rounded-lg` and `rounded-xl`
+- **Theme toggle** positioned in header next to title
+
+### Technical Changes
+- Created `src/contexts/ThemeContext.tsx` with React Context API
+- Wrapped App component with `ThemeProvider`
+- Added theme toggle to header layout
+- Updated all component color classes for consistent theming
+
 ## [1.0.0] - 2025-11-16
 
 ### Added

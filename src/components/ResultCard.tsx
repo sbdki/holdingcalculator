@@ -20,11 +20,11 @@ const ResultCard: React.FC<ResultCardProps> = ({
   children,
 }) => {
   return (
-    <div className="p-5 bg-white border border-gray-200 shadow-2xs rounded-xl dark:bg-neutral-800 dark:border-neutral-700">
+    <div className="p-5 bg-white border border-gray-200 shadow-2xs rounded-xl dark:bg-neutral-700/30 dark:border-neutral-700">
       <div className="grid sm:grid-cols-12 gap-4">
         {/* Value display - larger on right */}
         <div className="sm:col-span-5 sm:order-2">
-          <div className="bg-gray-100 rounded-xl overflow-hidden dark:bg-neutral-700 h-full flex items-center justify-center">
+          <div className="bg-gray-100 rounded-lg overflow-hidden dark:bg-neutral-700/50 h-full flex items-center justify-center">
             <span className="text-2xl sm:text-3xl font-semibold text-gray-900 dark:text-neutral-50">
               {value}
             </span>
@@ -46,7 +46,7 @@ const ResultCard: React.FC<ResultCardProps> = ({
               <button
                 type="button"
                 onClick={onToggle}
-                className="inline-flex items-center gap-x-1 text-sm text-blue-600 decoration-2 hover:underline font-medium focus:outline-hidden focus:underline dark:text-blue-400 dark:hover:text-blue-500"
+                className="inline-flex items-center gap-x-1 text-sm text-gray-800 decoration-2 hover:underline font-medium focus:outline-none dark:text-neutral-200"
               >
                 {expanded ? "Hide math" : "Show math"}
                 <svg

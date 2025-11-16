@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import InputField from "./InputField";
 import ResultCard from "./ResultCard";
+import ThemeToggle from "./ThemeToggle";
 import { calculateHoldingPattern, normalizeAngle, signedAngleDiff } from "../utils/calculations";
 import type { HoldingResults } from "../types";
 
@@ -72,20 +73,23 @@ const HoldingCalculator: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900 dark:bg-slate-950 dark:text-slate-50 flex justify-center px-4 py-8">
       <div className="w-full max-w-5xl space-y-8">
-        {/* Header */}
-        <header>
-          <h1 className="text-2xl md:text-3xl font-semibold tracking-wide text-gray-900 dark:text-neutral-50">
-            HOLDING CORRECTION CALCULATOR
-          </h1>
-          <p className="text-sm md:text-base text-gray-600 dark:text-neutral-300 mt-2 max-w-2xl">
-            Enter magnetic wind, inbound course, and groundspeed to compute drift, headings
-            (single & triple drift), and suggested outbound timing. Expand each card to see
-            the exact formulas and numbers behind the result.
-          </p>
+        {/* Header with Theme Toggle */}
+        <header className="flex items-start justify-between gap-4">
+          <div className="flex-1">
+            <h1 className="text-2xl md:text-3xl font-semibold tracking-wide text-gray-900 dark:text-neutral-50">
+              HOLDING CORRECTION CALCULATOR
+            </h1>
+            <p className="text-sm md:text-base text-gray-600 dark:text-neutral-300 mt-2 max-w-2xl">
+              Enter magnetic wind, inbound course, and groundspeed to compute drift, headings
+              (single & triple drift), and suggested outbound timing. Expand each card to see
+              the exact formulas and numbers behind the result.
+            </p>
+          </div>
+          <ThemeToggle />
         </header>
 
         {/* INPUTS SECTION */}
-        <section className="p-5 bg-white border border-gray-200 shadow-2xs rounded-xl dark:bg-neutral-900 dark:border-neutral-700">
+        <section className="p-5 bg-white border border-gray-200 shadow-2xs rounded-xl dark:bg-neutral-700/30 dark:border-neutral-700">
           <h2 className="text-sm font-semibold mb-4 text-gray-800 dark:text-neutral-100 tracking-wide">
             INPUTS
           </h2>
@@ -111,7 +115,7 @@ const HoldingCalculator: React.FC = () => {
             <button
               type="button"
               onClick={handleCalculate}
-              className="inline-flex items-center justify-center rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-500 transition-colors"
+              className="inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-semibold bg-black text-white hover:bg-gray-800 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-400 dark:bg-white dark:text-black dark:hover:bg-gray-100"
             >
               CALCULATE
             </button>
