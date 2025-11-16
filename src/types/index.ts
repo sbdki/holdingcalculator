@@ -19,6 +19,12 @@ export interface HoldingResults {
   outboundTime: number;
   headTailComponentKt: number;
   outboundAngleFromTrack: number;
+  // Single drift calculation details
+  driftAngleToInbound: number;
+  driftAngleToOutbound: number;
+  driftUsedLeg: 'inbound' | 'outbound';
+  driftRelativeAngle: number;
+  driftCrosswind: number;
 }
 
 export interface InputFieldProps {

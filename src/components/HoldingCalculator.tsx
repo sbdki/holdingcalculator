@@ -123,7 +123,7 @@ const HoldingCalculator = () => {
 
         {/* RESULTS SECTION */}
         {results && (
-          <section className="space-y-4">(
+          <section className="space-y-4">
             <div className="space-y-4">
               {/* OUTBOUND COURSE */}
               <ResultCard
@@ -131,7 +131,7 @@ const HoldingCalculator = () => {
                 value={`${results.outboundCourse.toFixed(0)}°M`}
                 expanded={!!expanded.outboundCourse}
                 onToggle={() => toggleExpanded("outboundCourse")}
-                subtitle="Inbound track plus 180°, normalized to 0–359°."
+                subtitle={inboundCourseNum < 180 ? "Inbound + 180°" : "Inbound - 180°"}
               >
                 <div className="text-sm leading-relaxed text-gray-700 dark:text-neutral-200 space-y-4">
                   <div className="space-y-2">
@@ -142,11 +142,11 @@ const HoldingCalculator = () => {
                   </div>
                   
                   <div className="space-y-2">
-                    <div className="font-semibold text-base">Step 2: Add 180° to get opposite direction</div>
+                    <div className="font-semibold text-base">Step 2: {inboundCourseNum < 180 ? 'Add' : 'Subtract'} 180° to get opposite direction</div>
                     <div className="space-y-1 font-mono text-sm">
-                      <div>Outbound Course = Inbound Course + 180°</div>
-                      <div className="pl-4">= {normalizeAngle(inboundCourseNum || 0).toFixed(0)}° + 180°</div>
-                      <div className="pl-4">= {results.outboundCourse.toFixed(0)}°M (normalized to 0-359°)</div>
+                      <div>Outbound Course = Inbound Course {inboundCourseNum < 180 ? '+' : '-'} 180°</div>
+                      <div className="pl-4">= {normalizeAngle(inboundCourseNum || 0).toFixed(0)}° {inboundCourseNum < 180 ? '+' : '-'} 180°</div>
+                      <div className="pl-4">= {results.outboundCourse.toFixed(0)}°M</div>
                     </div>
                   </div>
                 </div>
@@ -154,33 +154,68 @@ const HoldingCalculator = () => {
 
               {/* SINGLE DRIFT */}
               <ResultCard
-                title="Single drift (max WCA)"
+                title="Single drift (max drift)"
                 value={`${results.singleDrift.toFixed(1)}°`}
                 expanded={!!expanded.singleDrift}
                 onToggle={() => toggleExpanded("singleDrift")}
-                subtitle="Wind correction angle for the inbound leg."
+                subtitle="Maximum wind correction angle using clock system."
               >
-                <div className="text-sm leading-relaxed text-gray-700 dark:text-neutral-200 space-y-4">
-                  <div className="space-y-2">
-                    <div className="font-semibold text-base">Step 1: Convert TAS to nautical miles per minute</div>
-                    <div className="space-y-1 font-mono text-sm">
-                      <div>TAS = {tasNum.toFixed(0)} kt</div>
-                      <div>TAS (NM/min) = TAS / 60</div>
-                      <div className="pl-4">= {tasNum.toFixed(0)} / 60</div>
-                      <div className="pl-4">= {(tasNum / 60).toFixed(2)} NM/min</div>
-                    </div>
-                  </div>
+                {(() => {
+                  const clockLabels: Record<number, string> = {
+                    0.25: "1/4 crosswind (15°)",
+                    0.5: "1/2 crosswind (30°)",
+                    0.75: "3/4 crosswind (45°)",
+                    1.0: "Full crosswind (60°+)"
+                  };
+                  const crosswindFraction = results.driftCrosswind / windSpdNum;
+                  const clockLabel = clockLabels[crosswindFraction] || `${(crosswindFraction * 100).toFixed(0)}% crosswind`;
                   
-                  <div className="space-y-2">
-                    <div className="font-semibold text-base">Step 2: Calculate drift angle</div>
-                    <div className="space-y-1 font-mono text-sm">
-                      <div>Wind Speed = {windSpdNum.toFixed(0)} kt</div>
-                      <div className="pt-1">Single Drift = Wind Speed / TAS(NM/min)</div>
-                      <div className="pl-4">= {windSpdNum.toFixed(0)} / {(tasNum / 60).toFixed(2)}</div>
-                      <div className="pl-4">≈ {results.singleDrift.toFixed(1)}°</div>
+                  return (
+                    <div className="text-sm leading-relaxed text-gray-700 dark:text-neutral-200 space-y-4">
+                      <div className="space-y-2">
+                        <div className="font-semibold text-base">Step 1: Find which leg is closer to wind direction</div>
+                        <div className="space-y-1 font-mono text-sm">
+                          <div>Wind Direction = {normalizeAngle(windDirNum || 0).toFixed(0)}°</div>
+                          <div>Inbound Course = {normalizeAngle(inboundCourseNum || 0).toFixed(0)}°</div>
+                          <div>Outbound Course = {results.outboundCourse.toFixed(0)}°</div>
+                          <div className="pt-1">Angle to inbound = |{normalizeAngle(windDirNum || 0).toFixed(0)}° - {normalizeAngle(inboundCourseNum || 0).toFixed(0)}°| = {results.driftAngleToInbound.toFixed(0)}°</div>
+                          <div>Angle to outbound = |{normalizeAngle(windDirNum || 0).toFixed(0)}° - {results.outboundCourse.toFixed(0)}°| = {results.driftAngleToOutbound.toFixed(0)}°</div>
+                        </div>
+                        <div className="text-gray-600 dark:text-neutral-400">
+                          → Use {results.driftUsedLeg} ({results.driftUsedLeg === 'inbound' ? normalizeAngle(inboundCourseNum || 0).toFixed(0) : results.outboundCourse.toFixed(0)}°) — relative angle = {results.driftRelativeAngle.toFixed(0)}°
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <div className="font-semibold text-base">Step 2: Apply clock system to find crosswind</div>
+                        <div className="text-gray-600 dark:text-neutral-400 text-sm">
+                          Clock system rules:
+                        </div>
+                        <div className="space-y-1 font-mono text-xs bg-blue-50 dark:bg-blue-950/30 p-3 rounded-lg">
+                          <div>• 15° → 1/4 crosswind</div>
+                          <div>• 30° → 1/2 crosswind</div>
+                          <div>• 45° → 3/4 crosswind</div>
+                          <div>• 60°+ → Full crosswind</div>
+                        </div>
+                        <div className="space-y-1 font-mono text-sm pt-2">
+                          <div>Relative angle = {results.driftRelativeAngle.toFixed(0)}° → {clockLabel}</div>
+                          <div>Wind Speed = {windSpdNum.toFixed(0)} kt</div>
+                          <div className="pt-1">Crosswind component = {results.driftCrosswind.toFixed(0)} kt</div>
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <div className="font-semibold text-base">Step 3: Calculate drift value at {tasNum.toFixed(0)} kt TAS</div>
+                        <div className="space-y-1 font-mono text-sm">
+                          <div>Drift = (60 × crosswind) / TAS</div>
+                          <div className="pl-4">= (60 × {results.driftCrosswind.toFixed(0)}) / {tasNum.toFixed(0)}</div>
+                          <div className="pl-4">= {(60 * results.driftCrosswind).toFixed(0)} / {tasNum.toFixed(0)}</div>
+                          <div className="pl-4">≈ {results.singleDrift.toFixed(1)}°</div>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
+                  );
+                })()}
               </ResultCard>
 
               {/* INBOUND HEADING */}

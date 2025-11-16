@@ -31,17 +31,73 @@ export function signedAngleDiff(windDir: number, course: number): number {
 }
 
 /**
- * Computes single drift angle (maximum wind correction angle)
- * Formula: Wind Speed (kt) / Groundspeed (NM/min)
+ * Computes crosswind component using clock system
+ * Clock system maps angle to crosswind fraction:
+ * - 15° → 1/4 crosswind
+ * - 30° → 1/2 crosswind
+ * - 45° → 3/4 crosswind
+ * - 60°+ → Full crosswind
  * 
+ * @param angle - Angle between wind and course (0-90°)
  * @param windSpeed - Wind speed in knots
- * @param groundspeed - Groundspeed in knots
- * @returns Drift angle in degrees
+ * @returns Crosswind component in knots
  */
-export function computeSingleDrift(windSpeed: number, groundspeed: number): number {
-  const gsNmPerMin = groundspeed / 60;
-  if (gsNmPerMin <= 0) return 0;
-  return windSpeed / gsNmPerMin;
+export function computeCrosswindComponent(angle: number, windSpeed: number): number {
+  const absAngle = Math.abs(angle);
+  
+  // Clock system thresholds
+  if (absAngle >= 60) return windSpeed;           // Full crosswind
+  if (absAngle >= 45) return windSpeed * 0.75;    // 3/4 crosswind
+  if (absAngle >= 30) return windSpeed * 0.5;     // 1/2 crosswind
+  if (absAngle >= 15) return windSpeed * 0.25;    // 1/4 crosswind
+  return 0;                                        // No crosswind
+}
+
+/**
+ * Computes single drift angle using clock system
+ * 
+ * Steps:
+ * 1. Find which leg (inbound or outbound) is closer to wind direction
+ * 2. Calculate angle between wind and that leg
+ * 3. Use clock system to find crosswind component
+ * 4. Calculate drift: (60 × crosswind) / TAS
+ * 
+ * @param windDirection - Wind direction in degrees (0-359)
+ * @param inboundCourse - Inbound course in degrees (0-359)
+ * @param outboundCourse - Outbound course in degrees (0-359)
+ * @param windSpeed - Wind speed in knots
+ * @param tas - True airspeed in knots
+ * @returns Object with drift angle and which leg was used
+ */
+export function computeSingleDrift(
+  windDirection: number,
+  inboundCourse: number,
+  outboundCourse: number,
+  windSpeed: number,
+  tas: number
+): { drift: number; angleToInbound: number; angleToOutbound: number; usedLeg: 'inbound' | 'outbound'; relativeAngle: number; crosswind: number } {
+  // Calculate angles to both legs
+  const angleToInbound = Math.abs(signedAngleDiff(windDirection, inboundCourse));
+  const angleToOutbound = Math.abs(signedAngleDiff(windDirection, outboundCourse));
+  
+  // Use whichever leg is closer
+  const usedLeg = angleToInbound <= angleToOutbound ? 'inbound' : 'outbound';
+  const relativeAngle = usedLeg === 'inbound' ? angleToInbound : angleToOutbound;
+  
+  // Get crosswind component using clock system
+  const crosswind = computeCrosswindComponent(relativeAngle, windSpeed);
+  
+  // Calculate drift: (60 × crosswind) / TAS
+  const drift = tas > 0 ? (60 * crosswind) / tas : 0;
+  
+  return {
+    drift,
+    angleToInbound,
+    angleToOutbound,
+    usedLeg,
+    relativeAngle,
+    crosswind
+  };
 }
 
 /**
@@ -81,13 +137,19 @@ export interface HoldingCalculation {
   outboundTime: number;
   headTailComponentKt: number;
   outboundAngleFromTrack: number;
+  // Single drift calculation details
+  driftAngleToInbound: number;
+  driftAngleToOutbound: number;
+  driftUsedLeg: 'inbound' | 'outbound';
+  driftRelativeAngle: number;
+  driftCrosswind: number;
 }
 
 export function calculateHoldingPattern(
   windDirection: number,
   windSpeed: number,
   inboundCourse: number,
-  groundspeed: number
+  tas: number
 ): HoldingCalculation {
   // Normalize inputs
   const windDirNorm = normalizeAngle(windDirection);
@@ -96,8 +158,9 @@ export function calculateHoldingPattern(
   // Outbound course is 180° opposite
   const outboundCourse = normalizeAngle(inboundCourseNorm + 180);
   
-  // Calculate single drift (max WCA)
-  const singleDrift = computeSingleDrift(windSpeed, groundspeed);
+  // Calculate single drift using clock system
+  const driftResult = computeSingleDrift(windDirNorm, inboundCourseNorm, outboundCourse, windSpeed, tas);
+  const singleDrift = driftResult.drift;
   
   // Inbound heading: course ± single drift
   const inboundDiff = signedAngleDiff(windDirNorm, inboundCourseNorm);
@@ -138,5 +201,11 @@ export function calculateHoldingPattern(
     outboundTime: Math.round(outboundTime),
     headTailComponentKt,
     outboundAngleFromTrack: absLegDiff,
+    // Single drift details
+    driftAngleToInbound: driftResult.angleToInbound,
+    driftAngleToOutbound: driftResult.angleToOutbound,
+    driftUsedLeg: driftResult.usedLeg,
+    driftRelativeAngle: driftResult.relativeAngle,
+    driftCrosswind: driftResult.crosswind,
   };
 }
