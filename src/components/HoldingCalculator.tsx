@@ -135,7 +135,7 @@ const HoldingCalculator = () => {
               >
                 <div className="text-sm leading-relaxed text-gray-700 dark:text-neutral-200">
                   <div className="border border-gray-200 dark:border-neutral-600 rounded-xl p-5">
-                    <h3 className="mt-0 mb-3 text-lg font-semibold">Simple calculation</h3>
+                    <h3 className="mt-0 mb-3 text-lg font-semibold">Step 1 — Calculate opposite direction</h3>
                     <div className="bg-gray-50 dark:bg-neutral-800/50 p-4 rounded-lg space-y-1">
                       <div>Inbound Course = {Math.round(normalizeAngle(inboundCourseNum || 0))}°</div>
                       <div className="pt-2">Outbound Course = Inbound Course {inboundCourseNum < 180 ? '+' : '-'} 180°</div>
@@ -182,12 +182,12 @@ const HoldingCalculator = () => {
                       <div className="border border-gray-200 dark:border-neutral-600 rounded-xl p-5 mb-4">
                         <h3 className="mt-0 mb-3 text-lg font-semibold">Step 2 — Apply clock system</h3>
                         <div className="bg-gray-50 dark:bg-neutral-800/50 p-4 rounded-lg">
-                          <div className="mb-3"><strong>Clock rules:</strong></div>
+                          <div className="mb-3"><strong>Clock rules (round to closest):</strong></div>
                           <div className="space-y-0.5">
-                            <div>15° → ¼ crosswind</div>
-                            <div>30° → ½ crosswind</div>
-                            <div>45° → ¾ crosswind</div>
-                            <div>60°+ → Full crosswind</div>
+                            <div>Closest to 15° → ¼ crosswind</div>
+                            <div>Closest to 30° → ½ crosswind</div>
+                            <div>Closest to 45° → ¾ crosswind</div>
+                            <div>Closest to 60°+ → Full crosswind</div>
                           </div>
                           <div className="pt-3 space-y-1">
                             <div>Relative angle: <strong>{Math.round(results.driftRelativeAngle)}° → {clockLabel.replace(/\s*\(.*?\)/, '')}</strong></div>
@@ -386,12 +386,12 @@ const HoldingCalculator = () => {
                       <div className="border border-gray-200 dark:border-neutral-600 rounded-xl p-5 mb-4">
                         <h3 className="mt-0 mb-3 text-lg font-semibold">Step 2 — Quarter-clock method</h3>
                         <div className="bg-gray-50 dark:bg-neutral-800/50 p-4 rounded-lg">
-                          <div className="mb-3"><strong>Clock rules:</strong></div>
+                          <div className="mb-3"><strong>Clock rules (round to closest):</strong></div>
                           <div className="space-y-0.5">
-                            <div>• 0–15° from track → 100% component</div>
-                            <div>• 15–45° → 75% component</div>
-                            <div>• 45–75° → 50% component</div>
-                            <div>• 75–90° → 25% component</div>
+                            <div>• Closest to 15° → ¼ component</div>
+                            <div>• Closest to 30° → ½ component</div>
+                            <div>• Closest to 45° → ¾ component</div>
+                            <div>• Closest to 60°+ → Full component</div>
                           </div>
                           <div className="pt-3 space-y-1">
                             <div>Angle = {Math.round(angleWindToCourse)}° → {factorLabel.replace(/\s*\(.*?\)/, '')}</div>

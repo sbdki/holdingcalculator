@@ -32,11 +32,12 @@ export function signedAngleDiff(windDir: number, course: number): number {
 
 /**
  * Computes crosswind component using clock system
- * Clock system maps angle to crosswind fraction:
- * - 15° → 1/4 crosswind
- * - 30° → 1/2 crosswind
- * - 45° → 3/4 crosswind
- * - 60°+ → Full crosswind
+ * Clock system rounds to CLOSEST quarter marker:
+ * - Closest to 0° → 0 (no crosswind)
+ * - Closest to 15° → 1/4 crosswind
+ * - Closest to 30° → 1/2 crosswind
+ * - Closest to 45° → 3/4 crosswind
+ * - Closest to 60°+ → Full crosswind
  * 
  * @param angle - Angle between wind and course (0-90°)
  * @param windSpeed - Wind speed in knots
@@ -45,12 +46,13 @@ export function signedAngleDiff(windDir: number, course: number): number {
 export function computeCrosswindComponent(angle: number, windSpeed: number): number {
   const absAngle = Math.abs(angle);
   
-  // Clock system thresholds
-  if (absAngle >= 60) return windSpeed;           // Full crosswind
-  if (absAngle >= 45) return windSpeed * 0.75;    // 3/4 crosswind
-  if (absAngle >= 30) return windSpeed * 0.5;     // 1/2 crosswind
-  if (absAngle >= 15) return windSpeed * 0.25;    // 1/4 crosswind
-  return 0;                                        // No crosswind
+  // Round to closest quarter marker
+  // 0-7.5° → 0, 7.5-22.5° → 15°, 22.5-37.5° → 30°, 37.5-52.5° → 45°, 52.5+ → 60°
+  if (absAngle < 7.5) return 0;                    // Closest to 0°
+  if (absAngle < 22.5) return windSpeed * 0.25;   // Closest to 15° → 1/4 crosswind
+  if (absAngle < 37.5) return windSpeed * 0.5;    // Closest to 30° → 1/2 crosswind
+  if (absAngle < 52.5) return windSpeed * 0.75;   // Closest to 45° → 3/4 crosswind
+  return windSpeed;                                 // Closest to 60°+ → Full crosswind
 }
 
 /**
