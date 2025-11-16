@@ -156,10 +156,10 @@ const HoldingCalculator = () => {
               >
                 {(() => {
                   const clockLabels: Record<number, string> = {
-                    0.25: "1/4 crosswind (15°)",
-                    0.5: "1/2 crosswind (30°)",
-                    0.75: "3/4 crosswind (45°)",
-                    1.0: "Full crosswind (60°+)"
+                    0.25: "1/4 crosswind",
+                    0.5: "1/2 crosswind",
+                    0.75: "3/4 crosswind",
+                    1.0: "Full crosswind"
                   };
                   const crosswindFraction = results.driftCrosswind / windSpdNum;
                   const clockLabel = clockLabels[crosswindFraction] || `${(crosswindFraction * 100).toFixed(0)}% crosswind`;
@@ -353,13 +353,14 @@ const HoldingCalculator = () => {
                   
                   // Determine quarter-clock factor
                   const getQuarterClockFactor = (angle: number): number => {
-                    if (angle <= 15) return 1.0;
-                    if (angle <= 45) return 0.75;
-                    if (angle <= 75) return 0.5;
-                    return 0.25;
+                    if (angle < 7.5) return 0;
+                    if (angle < 22.5) return 0.25;
+                    if (angle < 37.5) return 0.5;
+                    if (angle < 52.5) return 0.75;
+                    return 1.0;
                   };
                   const factor = getQuarterClockFactor(angleWindToCourse);
-                  const factorLabel = factor === 1.0 ? "Full (×1.0)" : factor === 0.75 ? "3/4 (×0.75)" : factor === 0.5 ? "1/2 (×0.5)" : "1/4 (×0.25)";
+                  const factorLabel = factor === 1.0 ? "Full" : factor === 0.75 ? "3/4" : factor === 0.5 ? "1/2" : factor === 0.25 ? "1/4" : "None";
                   
                   return (
                     <div className="text-sm leading-relaxed text-gray-700 dark:text-neutral-200">
