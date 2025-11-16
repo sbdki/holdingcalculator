@@ -35,9 +35,8 @@ const QuarterClockDiagram = ({ angleFromNose, windSpeed, component }: QuarterClo
   return (
     <div className="flex flex-col items-center gap-4 py-4">
       {/* Clock Circle */}
-      <div className="relative w-64 h-64">
-        {/* Background circle with zones */}
-        <svg className="w-full h-full" viewBox="0 0 200 200">
+      <div className="relative w-80 h-80">
+        <svg className="w-full h-full" viewBox="0 0 240 240">
           {/* Define gradients for each zone */}
           <defs>
             {zones.map((zone, idx) => (
@@ -45,16 +44,19 @@ const QuarterClockDiagram = ({ angleFromNose, windSpeed, component }: QuarterClo
                 <stop offset="0%" stopColor={zone.color.includes('red') ? '#ef4444' : 
                                               zone.color.includes('orange') ? '#f97316' :
                                               zone.color.includes('yellow') ? '#facc15' : '#22c55e'} 
-                      stopOpacity={currentZone === idx ? "0.4" : "0.15"} />
+                      stopOpacity={currentZone === idx ? "0.5" : "0.2"} />
                 <stop offset="100%" stopColor={zone.color.includes('orange') && !zone.color.includes('red') ? '#fb923c' :
                                                 zone.color.includes('yellow') && !zone.color.includes('orange') ? '#fde047' :
                                                 zone.color.includes('green') ? '#4ade80' : '#60a5fa'} 
-                      stopOpacity={currentZone === idx ? "0.4" : "0.15"} />
+                      stopOpacity={currentZone === idx ? "0.5" : "0.2"} />
               </linearGradient>
             ))}
           </defs>
 
-          {/* Quarter circle zones (0° at top, clockwise to 90°) */}
+          {/* Full circle background (light gray) */}
+          <circle cx="120" cy="120" r="100" fill="#f3f4f6" className="dark:fill-neutral-800" />
+          
+          {/* Quarter circle zones (0° at top, clockwise to 90° on right) */}
           {[0, 1, 2, 3].map((idx) => {
             const startAngle = idx === 0 ? 0 : idx === 1 ? 15 : idx === 2 ? 45 : 75;
             const endAngle = idx === 0 ? 15 : idx === 1 ? 45 : idx === 2 ? 75 : 90;
@@ -63,60 +65,79 @@ const QuarterClockDiagram = ({ angleFromNose, windSpeed, component }: QuarterClo
             const start = ((startAngle - 90) * Math.PI) / 180;
             const end = ((endAngle - 90) * Math.PI) / 180;
             
-            const x1 = 100 + 90 * Math.cos(start);
-            const y1 = 100 + 90 * Math.sin(start);
-            const x2 = 100 + 90 * Math.cos(end);
-            const y2 = 100 + 90 * Math.sin(end);
+            const x1 = 120 + 100 * Math.cos(start);
+            const y1 = 120 + 100 * Math.sin(start);
+            const x2 = 120 + 100 * Math.cos(end);
+            const y2 = 120 + 100 * Math.sin(end);
             
             const largeArc = endAngle - startAngle > 180 ? 1 : 0;
             
             return (
               <path
                 key={idx}
-                d={`M 100 100 L ${x1} ${y1} A 90 90 0 ${largeArc} 1 ${x2} ${y2} Z`}
+                d={`M 120 120 L ${x1} ${y1} A 100 100 0 ${largeArc} 1 ${x2} ${y2} Z`}
                 fill={`url(#gradient-${idx})`}
-                stroke={currentZone === idx ? '#3b82f6' : '#e5e7eb'}
-                strokeWidth={currentZone === idx ? '3' : '1'}
+                stroke={currentZone === idx ? '#3b82f6' : '#d1d5db'}
+                strokeWidth={currentZone === idx ? '3' : '1.5'}
                 className="transition-all duration-300"
               />
             );
           })}
 
-          {/* Center circle (aircraft nose point) */}
-          <circle cx="100" cy="100" r="8" fill="#1f2937" />
+          {/* Clock circle outline */}
+          <circle cx="120" cy="120" r="100" fill="none" stroke="#9ca3af" strokeWidth="2" className="dark:stroke-neutral-600" />
+
+          {/* Cardinal direction markers */}
+          <g className="fill-gray-700 dark:fill-gray-300">
+            {/* 0° - North (top) */}
+            <text x="120" y="22" textAnchor="middle" className="text-sm font-bold">0°</text>
+            {/* 90° - East (right) */}
+            <text x="215" y="125" textAnchor="middle" className="text-sm font-bold">90°</text>
+            {/* 180° - South (bottom) */}
+            <text x="120" y="220" textAnchor="middle" className="text-sm font-bold">180°</text>
+            {/* 270° - West (left) */}
+            <text x="25" y="125" textAnchor="middle" className="text-sm font-bold">270°</text>
+          </g>
+
+          {/* Intermediate angle markers */}
+          <g className="fill-gray-500 dark:fill-gray-400 text-xs">
+            <text x="188" y="52" textAnchor="middle">45°</text>
+            <text x="188" y="198" textAnchor="middle">135°</text>
+            <text x="52" y="198" textAnchor="middle">225°</text>
+            <text x="52" y="52" textAnchor="middle">315°</text>
+          </g>
+
+          {/* Center circle (aircraft) */}
+          <circle cx="120" cy="120" r="12" fill="#1f2937" stroke="#3b82f6" strokeWidth="2" />
           
           {/* Wind direction pointer */}
-          <g transform={`rotate(${pointerRotation}, 100, 100)`}>
+          <g transform={`rotate(${pointerRotation}, 120, 120)`}>
             <line
-              x1="100"
-              y1="100"
-              x2="100"
-              y2="20"
+              x1="120"
+              y1="120"
+              x2="120"
+              y2="30"
               stroke="#3b82f6"
-              strokeWidth="4"
+              strokeWidth="5"
               strokeLinecap="round"
               className="drop-shadow-lg"
             />
             {/* Arrow head */}
             <polygon
-              points="100,15 95,25 105,25"
+              points="120,25 113,38 127,38"
               fill="#3b82f6"
               className="drop-shadow-lg"
             />
           </g>
-
-          {/* Angle labels */}
-          <text x="100" y="15" textAnchor="middle" className="text-xs font-semibold fill-gray-700 dark:fill-gray-300">0°</text>
-          <text x="185" y="105" textAnchor="middle" className="text-xs font-semibold fill-gray-700 dark:fill-gray-300">90°</text>
           
           {/* Center label */}
-          <text x="100" y="103" textAnchor="middle" className="text-xs font-bold fill-white">YOU</text>
+          <text x="120" y="125" textAnchor="middle" className="text-xs font-bold fill-white">YOU</text>
         </svg>
 
         {/* Angle display */}
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mt-16 bg-white dark:bg-neutral-800 px-3 py-1 rounded-lg shadow-md border border-gray-200 dark:border-neutral-700">
-          <div className="text-sm font-bold text-blue-600 dark:text-blue-400">
-            {angleFromNose.toFixed(0)}°
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mt-24 bg-white dark:bg-neutral-800 px-4 py-2 rounded-lg shadow-lg border-2 border-blue-500">
+          <div className="text-base font-bold text-blue-600 dark:text-blue-400">
+            {angleFromNose.toFixed(0)}° from nose
           </div>
         </div>
       </div>
