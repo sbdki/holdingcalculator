@@ -227,23 +227,13 @@ const HoldingCalculator = () => {
                 subtitle="Maximum possible wind correction angle (direct crosswind)."
               >
                 <div className="text-sm leading-relaxed text-gray-700 dark:text-neutral-200">
-                  <div className="border border-gray-200 dark:border-neutral-600 rounded-xl p-5 mb-4">
-                    <h3 className="mt-0 mb-3 text-lg font-semibold">Step 1 — Convert TAS</h3>
-                    <div className="bg-gray-50 dark:bg-neutral-800/50 p-4 rounded-lg space-y-1">
-                      <div>TAS = {Math.round(tasNum)} kt</div>
-                      <div>TAS (NM/min) = TAS ÷ 60</div>
-                      <div>= {Math.round(tasNum)} ÷ 60</div>
-                      <div>= {(tasNum / 60).toFixed(2)} NM/min</div>
-                    </div>
-                  </div>
-                  
                   <div className="border border-gray-200 dark:border-neutral-600 rounded-xl p-5">
-                    <h3 className="mt-0 mb-3 text-lg font-semibold">Step 2 — Calculate max drift</h3>
+                    <h3 className="mt-0 mb-3 text-lg font-semibold">Step 1 — Simple rule</h3>
                     <div className="bg-gray-50 dark:bg-neutral-800/50 p-4 rounded-lg space-y-1">
                       <div>Wind Speed = {Math.round(windSpdNum)} kt</div>
-                      <div className="pt-2">Max Drift = Wind Speed ÷ TAS(NM/min)</div>
-                      <div>= {Math.round(windSpdNum)} ÷ {(tasNum / 60).toFixed(2)}</div>
-                      <div className="pt-2">= <strong>{Math.round(results.maxDrift)}° drift</strong></div>
+                      <div className="pt-2">Max Drift = Wind Speed ÷ 2</div>
+                      <div>= {Math.round(windSpdNum)} ÷ 2</div>
+                      <div className="pt-2">= <strong>{Math.round(results.maxDrift)}°</strong></div>
                       <div className="text-gray-600 dark:text-neutral-400 pt-2">
                         → Maximum drift if wind was 90° crosswind
                       </div>

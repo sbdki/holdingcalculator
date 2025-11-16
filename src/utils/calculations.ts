@@ -171,9 +171,8 @@ export function calculateHoldingPattern(
   const driftResult = computeSingleDrift(windDirNorm, inboundCourseNorm, outboundCourse, windSpeed, tas);
   const singleDrift = driftResult.drift;
   
-  // Calculate max drift using simple formula
-  const tasNmPerMin = tas / 60;
-  const maxDrift = tasNmPerMin > 0 ? windSpeed / tasNmPerMin : 0;
+  // Calculate max drift using simple formula: half of wind velocity
+  const maxDrift = windSpeed / 2;
   
   // Inbound heading: course ± single drift
   const inboundDiff = signedAngleDiff(windDirNorm, inboundCourseNorm);
