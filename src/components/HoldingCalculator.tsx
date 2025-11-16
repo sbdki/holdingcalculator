@@ -344,7 +344,12 @@ const HoldingCalculator = () => {
               {/* OUTBOUND TIME */}
               <ResultCard
                 title="Outbound time"
-                value={`${results.outboundTime} s`}
+                value={(() => {
+                  const totalSeconds = results.outboundTime;
+                  const minutes = Math.floor(totalSeconds / 60);
+                  const seconds = totalSeconds % 60;
+                  return minutes > 0 ? `${minutes}m${seconds.toString().padStart(2, '0')}s` : `${seconds}s`;
+                })()}
                 expanded={!!expanded.outboundTime}
                 onToggle={() => toggleExpanded("outboundTime")}
                 subtitle="How long to fly outbound before turning back."
@@ -354,21 +359,29 @@ const HoldingCalculator = () => {
                   const effectiveAngle = results.timingEffectiveAngle;
                   const alongTrackWind = results.timingAlongTrackWind;
                   
-                  // Timing clock method factor
+                  // Timing clock method factor (round to closest)
                   let timingFactor: number;
                   let timingLabel: string;
-                  if (effectiveAngle <= 30) {
+                  if (effectiveAngle < 45) {
+                    if (effectiveAngle < 15) {
+                      timingFactor = 1.0;
+                      timingLabel = "Full wind";
+                    } else {
+                      timingFactor = 0.5;
+                      timingLabel = "Half wind";
+                    }
+                  } else if (effectiveAngle < 75) {
                     timingFactor = 1.0;
                     timingLabel = "Full wind";
-                  } else if (effectiveAngle <= 60) {
-                    timingFactor = 0.5;
-                    timingLabel = "Half wind";
                   } else {
                     timingFactor = 0.0;
                     timingLabel = "No timing effect";
                   }
                   
-                  const timingCorrection = isTailwind ? -alongTrackWind : alongTrackWind;
+                  const tasNmPerMin = tasNum / 60;
+                  const timingCorrection = isTailwind 
+                    ? -(alongTrackWind / tasNmPerMin) 
+                    : (alongTrackWind / tasNmPerMin);
                   
                   return (
                     <div className="text-sm leading-relaxed text-gray-700 dark:text-neutral-200">
@@ -379,7 +392,7 @@ const HoldingCalculator = () => {
                           <div><strong>Outbound Heading:</strong> {Math.round(results.outboundCourse)}°</div>
                           <div className="pt-2"><strong>±90° Zone Rule:</strong></div>
                           <div>• Headwind zone: {Math.round(normalizeAngle(results.outboundCourse - 90))}° to {Math.round(normalizeAngle(results.outboundCourse + 90))}°</div>
-                          <div>• Tailwind zone: {Math.round(normalizeAngle(results.outboundCourse + 90))}° to {Math.round(normalizeAngle(results.outboundCourse - 90))}° (opposite side)</div>
+                          <div>• Tailwind zone: {Math.round(normalizeAngle(results.outboundCourse + 90))}° to {Math.round(normalizeAngle(results.outboundCourse - 90))}°</div>
                           <div className="pt-2">Wind {Math.round(normalizeAngle(windDirNum || 0))}° is in the <strong>{isTailwind ? 'tailwind' : 'headwind'} zone</strong></div>
                           <div className="pt-2">→ <strong>{isTailwind ? 'Tailwind' : 'Headwind'}</strong> (effective angle = {Math.round(effectiveAngle)}°)</div>
                         </div>
@@ -388,16 +401,23 @@ const HoldingCalculator = () => {
                       <div className="border border-gray-200 dark:border-neutral-600 rounded-xl p-5 mb-4">
                         <h3 className="mt-0 mb-3 text-lg font-semibold">Step 2 — Timing clock method</h3>
                         <div className="bg-gray-50 dark:bg-neutral-800/50 p-4 rounded-lg">
-                          <div className="mb-3"><strong>Timing clock rules:</strong></div>
+                          <div className="mb-3"><strong>Timing clock rules (round to closest):</strong></div>
                           <div className="space-y-0.5">
-                            <div>• 0–30° → Full wind effect</div>
-                            <div>• 30–60° → Half wind effect</div>
-                            <div>• 60–90° → No timing effect (crosswind)</div>
+                            <div>• 0–15° → Full wind effect</div>
+                            <div>• 15–45° → Half wind effect</div>
+                            <div>• 45–75° → Full wind effect</div>
+                            <div>• 75–90° → No timing effect</div>
                           </div>
                           <div className="pt-3 space-y-1">
                             <div>Effective angle: {Math.round(effectiveAngle)}° → <strong>{timingLabel}</strong></div>
                             <div className="pt-2">Along-track wind = {Math.round(windSpdNum)} kt × {timingFactor.toFixed(1)}</div>
                             {timingFactor > 0 && <div>= <strong>{Math.round(alongTrackWind)} kt</strong></div>}
+                            {timingFactor > 0 && (
+                              <div className="pt-2">
+                                <div>Timing correction = {Math.round(alongTrackWind)} kt ÷ (TAS {Math.round(tasNum)} ÷ 60)</div>
+                                <div>= <strong>{Math.round(Math.abs(timingCorrection))} seconds</strong></div>
+                              </div>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -406,10 +426,14 @@ const HoldingCalculator = () => {
                         <h3 className="mt-0 mb-3 text-lg font-semibold">Step 3 — Calculate final time</h3>
                         <div className="bg-gray-50 dark:bg-neutral-800/50 p-4 rounded-lg space-y-1">
                           <div>Standard time = 60 seconds</div>
-                          <div className="pt-2">Timing correction = {timingCorrection >= 0 ? '+' : ''}{Math.round(timingCorrection)} seconds</div>
-                          <div className="text-sm text-gray-600 dark:text-neutral-400">({isTailwind ? 'Tailwind: subtract time (fly shorter)' : 'Headwind: add time (fly longer)'})</div>
-                          <div className="pt-2">Final time = 60 + ({Math.round(timingCorrection)})</div>
-                          <div>= <strong>{results.outboundTime} seconds</strong></div>
+                          <div className="pt-2">It's a <strong>{isTailwind ? 'tailwind' : 'headwind'}</strong>, so we {isTailwind ? 'subtract' : 'add'} that time</div>
+                          <div className="pt-2">Final time = 60 {timingCorrection >= 0 ? '+' : ''} {Math.round(timingCorrection)}</div>
+                          <div>= <strong>{(() => {
+                            const totalSeconds = results.outboundTime;
+                            const minutes = Math.floor(totalSeconds / 60);
+                            const seconds = totalSeconds % 60;
+                            return minutes > 0 ? `${minutes}m${seconds.toString().padStart(2, '0')}s` : `${seconds}s`;
+                          })()}</strong></div>
                         </div>
                       </div>
                     </div>

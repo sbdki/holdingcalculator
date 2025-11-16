@@ -231,18 +231,24 @@ export function calculateHoldingPattern(
   let angleFromTail = Math.abs(windDirNorm - tailDirection);
   if (angleFromTail > 180) angleFromTail = 360 - angleFromTail;
   
-  // Timing clock method: 0-30° full, 30-60° half, 60-90° none
+  // Timing clock method: round to closest marker
+  // 0-30° full, 30-60° half, 60-90° none
   let timingFactor: number;
-  if (effectiveAngle <= 30) {
-    timingFactor = 1.0;
-  } else if (effectiveAngle <= 60) {
-    timingFactor = 0.5;
+  if (effectiveAngle < 45) {
+    // Closer to 0° or 30°
+    timingFactor = effectiveAngle < 15 ? 1.0 : 0.5;
+  } else if (effectiveAngle < 75) {
+    // Closer to 60°
+    timingFactor = 1.0;  // Full wind (60° = full crosswind for timing)
   } else {
-    timingFactor = 0.0;
+    timingFactor = 0.0;  // Beyond 75°, no timing effect
   }
   
   const alongTrackWind = windSpeed * timingFactor;
-  const secondsPerKnot = 60 / 60; // For 60-second target legs
+  
+  // Calculate timing correction: divide by TAS to get seconds per nautical mile effect
+  const tasNmPerMinTiming = tas / 60;
+  const secondsPerKnot = tasNmPerMinTiming > 0 ? 1.0 / tasNmPerMinTiming : 0;
   
   // Headwind: add time (fly longer), Tailwind: subtract time (fly shorter)
   const timingCorrection = isHeadwind ? alongTrackWind * secondsPerKnot : -alongTrackWind * secondsPerKnot;
