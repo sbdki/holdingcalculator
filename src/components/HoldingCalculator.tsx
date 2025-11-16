@@ -373,14 +373,15 @@ const HoldingCalculator = () => {
                   return (
                     <div className="text-sm leading-relaxed text-gray-700 dark:text-neutral-200">
                       <div className="border border-gray-200 dark:border-neutral-600 rounded-xl p-5 mb-4">
-                        <h3 className="mt-0 mb-3 text-lg font-semibold">Step 1 — Determine headwind or tailwind</h3>
+                        <h3 className="mt-0 mb-3 text-lg font-semibold">Step 1 — Determine headwind or tailwind zone</h3>
                         <div className="bg-gray-50 dark:bg-neutral-800/50 p-4 rounded-lg space-y-1">
                           <div><strong>Wind FROM:</strong> {Math.round(normalizeAngle(windDirNum || 0))}°</div>
                           <div><strong>Outbound Heading:</strong> {Math.round(results.outboundCourse)}°</div>
-                          <div className="pt-2">Angle from head (nose): {Math.round(results.timingAngleFromHead)}°</div>
-                          <div>Angle from tail: {Math.round(results.timingAngleFromTail)}°</div>
+                          <div className="pt-2"><strong>±90° Zone Rule:</strong></div>
+                          <div>• Headwind zone: {Math.round(normalizeAngle(results.outboundCourse - 90))}° to {Math.round(normalizeAngle(results.outboundCourse + 90))}°</div>
+                          <div>• Tailwind zone: {Math.round(normalizeAngle(results.outboundCourse + 90))}° to {Math.round(normalizeAngle(results.outboundCourse - 90))}° (opposite side)</div>
+                          <div className="pt-2">Wind {Math.round(normalizeAngle(windDirNum || 0))}° is in the <strong>{isTailwind ? 'tailwind' : 'headwind'} zone</strong></div>
                           <div className="pt-2">→ <strong>{isTailwind ? 'Tailwind' : 'Headwind'}</strong> (effective angle = {Math.round(effectiveAngle)}°)</div>
-                          <div className="text-sm text-gray-600 dark:text-neutral-400 pt-1">(Wind is closer to the {isTailwind ? 'tail' : 'head'} direction)</div>
                         </div>
                       </div>
 

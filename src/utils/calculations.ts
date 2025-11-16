@@ -197,23 +197,39 @@ export function calculateHoldingPattern(
   // Compute outbound timing adjustment using TIMING clock method
   // Different from drift calculation!
   
-  // Determine angles from head (nose) and tail
-  // Head = outbound heading (where you're going/nose points)
-  // Tail = opposite direction (where you came from)
-  const headDir = outboundCourse;  // Your nose/heading direction
-  const tailDir = normalizeAngle(outboundCourse + 180);  // Your tail direction
+  // Step 1: Define headwind and tailwind zones using ±90° rule
+  // Headwind zone: outbound_heading ± 90°
+  const headwindStart = normalizeAngle(outboundCourse - 90);
+  const headwindEnd = normalizeAngle(outboundCourse + 90);
   
-  let angleFromHead = Math.abs(windDirNorm - headDir);
+  // Tailwind zone: opposite direction ± 90°
+  const tailDirection = normalizeAngle(outboundCourse + 180);
+  
+  // Step 2: Check if wind is in headwind or tailwind zone
+  function isInRange(value: number, start: number, end: number): boolean {
+    if (start <= end) {
+      return value >= start && value <= end;
+    } else {
+      // Range wraps around 360°
+      return value >= start || value <= end;
+    }
+  }
+  
+  const inHeadwindZone = isInRange(windDirNorm, headwindStart, headwindEnd);
+  const isHeadwind = inHeadwindZone;
+  const isTailwind = !isHeadwind;
+  
+  // Step 3: Calculate effective angle from reference direction
+  const referenceDirection = isHeadwind ? outboundCourse : tailDirection;
+  let effectiveAngle = Math.abs(windDirNorm - referenceDirection);
+  if (effectiveAngle > 180) effectiveAngle = 360 - effectiveAngle;
+  
+  // Store detailed angles for display
+  let angleFromHead = Math.abs(windDirNorm - outboundCourse);
   if (angleFromHead > 180) angleFromHead = 360 - angleFromHead;
   
-  let angleFromTail = Math.abs(windDirNorm - tailDir);
+  let angleFromTail = Math.abs(windDirNorm - tailDirection);
   if (angleFromTail > 180) angleFromTail = 360 - angleFromTail;
-  
-  // Determine if headwind or tailwind
-  // If wind is closer to head direction = headwind
-  const isHeadwind = angleFromHead < angleFromTail;
-  const isTailwind = !isHeadwind;
-  const effectiveAngle = isHeadwind ? angleFromHead : angleFromTail;
   
   // Timing clock method: 0-30° full, 30-60° half, 60-90° none
   let timingFactor: number;
