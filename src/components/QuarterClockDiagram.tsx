@@ -2,16 +2,19 @@
  * QuarterClockDiagram Component
  * 
  * Purpose: Visual representation of the quarter-clock method
- * Shows wind angle zones with color-coded multiplier factors
+ * Shows the angle between WIND DIRECTION and OUTBOUND COURSE
+ * (NOT the aircraft nose - heading is irrelevant!)
  */
 
 interface QuarterClockDiagramProps {
-  angleFromNose: number;
+  windDirection: number;
+  outboundCourse: number;
+  angleWindToCourse: number;
   windSpeed: number;
   component: number;
 }
 
-const QuarterClockDiagram = ({ angleFromNose, windSpeed, component }: QuarterClockDiagramProps) => {
+const QuarterClockDiagram = ({ windDirection, outboundCourse, angleWindToCourse, windSpeed, component }: QuarterClockDiagramProps) => {
   // Determine which zone the angle falls into
   const getZone = (angle: number) => {
     if (angle < 15) return 0;
@@ -20,7 +23,7 @@ const QuarterClockDiagram = ({ angleFromNose, windSpeed, component }: QuarterClo
     return 3;
   };
 
-  const currentZone = getZone(angleFromNose);
+  const currentZone = getZone(angleWindToCourse);
   
   const zones = [
     { label: '0-15°', factor: '×1.0', color: 'from-red-500 to-orange-500', textColor: 'text-red-600' },
@@ -29,8 +32,9 @@ const QuarterClockDiagram = ({ angleFromNose, windSpeed, component }: QuarterClo
     { label: '75-90°', factor: '×0.25', color: 'from-green-400 to-blue-400', textColor: 'text-green-600' },
   ];
 
-  // Calculate pointer rotation (0° = top, clockwise)
-  const pointerRotation = angleFromNose;
+  // Normalize angles to 0-360
+  const normWind = windDirection % 360;
+  const normCourse = outboundCourse % 360;
 
   return (
     <div className="flex flex-col items-center gap-4 py-4">
@@ -56,21 +60,26 @@ const QuarterClockDiagram = ({ angleFromNose, windSpeed, component }: QuarterClo
           {/* Full circle background (light gray) */}
           <circle cx="120" cy="120" r="100" fill="#f3f4f6" className="dark:fill-neutral-800" />
           
-          {/* Quarter circle zones (0° at top, clockwise to 90° on right) */}
+          {/* Quarter-clock zones radiating FROM outbound course */}
           {[0, 1, 2, 3].map((idx) => {
             const startAngle = idx === 0 ? 0 : idx === 1 ? 15 : idx === 2 ? 45 : 75;
             const endAngle = idx === 0 ? 15 : idx === 1 ? 45 : idx === 2 ? 75 : 90;
             
+            // These angles are relative to outbound course, not north
+            // Add outbound course to rotate zones
+            const absStart = (normCourse + startAngle) % 360;
+            const absEnd = (normCourse + endAngle) % 360;
+            
             // Convert to SVG path (0° = top = -90° in standard coords)
-            const start = ((startAngle - 90) * Math.PI) / 180;
-            const end = ((endAngle - 90) * Math.PI) / 180;
+            const start = ((absStart - 90) * Math.PI) / 180;
+            const end = ((absEnd - 90) * Math.PI) / 180;
             
             const x1 = 120 + 100 * Math.cos(start);
             const y1 = 120 + 100 * Math.sin(start);
             const x2 = 120 + 100 * Math.cos(end);
             const y2 = 120 + 100 * Math.sin(end);
             
-            const largeArc = endAngle - startAngle > 180 ? 1 : 0;
+            const largeArc = 0; // Always small arcs (15°, 30°, 30°, 15°)
             
             return (
               <path
@@ -107,17 +116,34 @@ const QuarterClockDiagram = ({ angleFromNose, windSpeed, component }: QuarterClo
             <text x="52" y="52" textAnchor="middle">315°</text>
           </g>
 
-          {/* Center circle (aircraft) */}
-          <circle cx="120" cy="120" r="12" fill="#1f2937" stroke="#3b82f6" strokeWidth="2" />
+          {/* Center circle */}
+          <circle cx="120" cy="120" r="12" fill="#1f2937" stroke="#6b7280" strokeWidth="2" />
+          
+          {/* Outbound course line (reference axis) */}
+          <g transform={`rotate(${normCourse}, 120, 120)`}>
+            <line
+              x1="120"
+              y1="120"
+              x2="120"
+              y2="25"
+              stroke="#10b981"
+              strokeWidth="4"
+              strokeLinecap="round"
+              strokeDasharray="6,4"
+            />
+            <text x="120" y="18" textAnchor="middle" className="text-xs font-bold fill-green-600 dark:fill-green-400">
+              OUTBOUND
+            </text>
+          </g>
           
           {/* Wind direction pointer */}
-          <g transform={`rotate(${pointerRotation}, 120, 120)`}>
+          <g transform={`rotate(${normWind}, 120, 120)`}>
             <line
               x1="120"
               y1="120"
               x2="120"
               y2="30"
-              stroke="#3b82f6"
+              stroke="#ef4444"
               strokeWidth="5"
               strokeLinecap="round"
               className="drop-shadow-lg"
@@ -125,19 +151,23 @@ const QuarterClockDiagram = ({ angleFromNose, windSpeed, component }: QuarterClo
             {/* Arrow head */}
             <polygon
               points="120,25 113,38 127,38"
-              fill="#3b82f6"
+              fill="#ef4444"
               className="drop-shadow-lg"
             />
+            <text x="120" y="50" textAnchor="middle" className="text-xs font-bold fill-red-600 dark:fill-red-400">
+              WIND
+            </text>
           </g>
           
           {/* Center label */}
-          <text x="120" y="125" textAnchor="middle" className="text-xs font-bold fill-white">YOU</text>
+          <text x="120" y="125" textAnchor="middle" className="text-xs font-bold fill-white">CENTER</text>
         </svg>
 
         {/* Angle display */}
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mt-24 bg-white dark:bg-neutral-800 px-4 py-2 rounded-lg shadow-lg border-2 border-blue-500">
-          <div className="text-base font-bold text-blue-600 dark:text-blue-400">
-            {angleFromNose.toFixed(0)}° from nose
+          <div className="text-sm font-semibold text-gray-700 dark:text-gray-300">Wind to Course Angle</div>
+          <div className="text-xl font-bold text-blue-600 dark:text-blue-400">
+            {angleWindToCourse.toFixed(0)}°
           </div>
         </div>
       </div>

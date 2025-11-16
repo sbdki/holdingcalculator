@@ -233,25 +233,28 @@ const HoldingCalculator = () => {
                   const component = results.headTailComponentKt;
                   const adjustment = isHeadwind ? component : -component;
                   
-                  // Calculate angle from nose (for quarter-clock)
-                  const angleFromNose = absLegDiff <= 90 ? absLegDiff : 180 - absLegDiff;
+                  // Calculate angle for quarter-clock (WIND to COURSE, not nose!)
+                  const angleWindToCourse = absLegDiff <= 90 ? absLegDiff : 180 - absLegDiff;
                   
                   return (
                     <div className="text-sm leading-relaxed text-gray-700 dark:text-neutral-200 space-y-4">
                       <div className="space-y-2">
-                        <div className="font-semibold text-base">Step 1: Find the angle from your nose</div>
-                        <div>Wind angle to outbound track: {absLegDiff.toFixed(0)}°</div>
-                        {absLegDiff > 90 ? (
-                          <>
-                            <div className="text-gray-600 dark:text-neutral-400 text-sm">
-                              This is more than 90°, so we measure from the back:
+                        <div className="font-semibold text-base">Step 1: Find angle between wind and outbound course</div>
+                        <div className="space-y-1 font-mono text-sm">
+                          <div>Wind Direction = {normalizeAngle(windDirNum || 0).toFixed(0)}°</div>
+                          <div>Outbound Course = {results.outboundCourse.toFixed(0)}°</div>
+                          <div className="pt-1">Raw difference = |{normalizeAngle(windDirNum || 0).toFixed(0)}° - {results.outboundCourse.toFixed(0)}°|</div>
+                          <div className="pl-4">= {absLegDiff.toFixed(0)}°</div>
+                        </div>
+                        {absLegDiff > 90 && (
+                          <div className="space-y-1 text-sm">
+                            <div className="text-gray-600 dark:text-neutral-400">
+                              This is more than 90°, so we use the smaller angle:
                             </div>
-                            <div className="pl-4">180° - {absLegDiff.toFixed(0)}° = {angleFromNose.toFixed(0)}° from nose</div>
-                          </>
-                        ) : (
-                          <div className="pl-4">This is {angleFromNose.toFixed(0)}° from your nose (front of plane)</div>
+                            <div className="pl-4 font-mono">180° - {absLegDiff.toFixed(0)}° = {angleWindToCourse.toFixed(0)}°</div>
+                          </div>
                         )}
-                        <div className="text-gray-600 dark:text-neutral-400">
+                        <div className="pt-2 text-gray-600 dark:text-neutral-400">
                           {isHeadwind ? '→ This is a headwind (slows you down)' : '→ This is a tailwind (speeds you up)'}
                         </div>
                       </div>
@@ -259,12 +262,14 @@ const HoldingCalculator = () => {
                       <div className="space-y-2">
                         <div className="font-semibold text-base">Step 2: Use the Quarter-Clock Method</div>
                         <div className="text-gray-600 dark:text-neutral-400 text-sm mb-3">
-                          A pilot trick to estimate wind effect based on angle:
+                          Zones radiate from the OUTBOUND COURSE (green line), not the aircraft nose:
                         </div>
                         
                         {/* Visual Clock Diagram */}
                         <QuarterClockDiagram 
-                          angleFromNose={angleFromNose}
+                          windDirection={normalizeAngle(windDirNum || 0)}
+                          outboundCourse={results.outboundCourse}
+                          angleWindToCourse={angleWindToCourse}
                           windSpeed={windSpdNum}
                           component={component}
                         />
