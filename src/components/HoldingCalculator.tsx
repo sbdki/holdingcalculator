@@ -85,7 +85,7 @@ const HoldingCalculator = () => {
         {/* INPUTS SECTION */}
         <section className="p-5 bg-white border border-gray-200 shadow-2xs rounded-xl dark:bg-neutral-700/30 dark:border-neutral-700">
           <h2 className="text-sm font-semibold mb-4 text-gray-800 dark:text-neutral-100 tracking-wide">
-            INPUTS
+            Data
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <InputField
@@ -122,17 +122,8 @@ const HoldingCalculator = () => {
         </section>
 
         {/* RESULTS SECTION */}
-        <section className="space-y-4">
-          <h2 className="text-sm font-semibold text-gray-800 dark:text-neutral-100 tracking-wide">
-            RESULTS
-          </h2>
-          {!results && (
-            <p className="text-sm text-gray-500 dark:text-neutral-400">
-              Enter values and press CALCULATE to see headings, drift, and outbound timing.
-            </p>
-          )}
-
-          {results && (
+        {results && (
+          <section className="space-y-4">(
             <div className="space-y-4">
               {/* OUTBOUND COURSE */}
               <ResultCard
@@ -239,9 +230,10 @@ const HoldingCalculator = () => {
                   const absLegDiff = results.outboundAngleFromTrack;
                   const isHeadwind = absLegDiff <= 90;
                   const component = results.headTailComponentKt;
+                  const adjustment = isHeadwind ? component : -component;
                   
                   return (
-                    <div className="text-sm leading-relaxed text-gray-700 dark:text-neutral-200 space-y-3">
+                    <div className="text-sm leading-relaxed text-gray-700 dark:text-neutral-200 space-y-4">
                       <div className="space-y-1">
                         <div className="font-semibold">Step 1: Check the wind angle</div>
                         <div>Wind angle to outbound track: {absLegDiff.toFixed(0)}°</div>
@@ -251,8 +243,15 @@ const HoldingCalculator = () => {
                       </div>
 
                       <div className="space-y-1">
-                        <div className="font-semibold">Step 2: Estimate wind effect</div>
-                        <div>Wind pushing you: ~{component.toFixed(0)} knots</div>
+                        <div className="font-semibold">Step 2: Estimate wind effect (Quarter-Clock Method)</div>
+                        <div className="text-gray-600 dark:text-neutral-400 text-xs space-y-1 mt-1">
+                          <div>A pilot mental-math rule based on wind angle:</div>
+                          <div className="pl-2">• 0–15° from nose → 100% component (×1.0)</div>
+                          <div className="pl-2">• 15–45° → 75% component (×0.75)</div>
+                          <div className="pl-2">• 45–75° → 50% component (×0.5)</div>
+                          <div className="pl-2">• 75–90° → 25% component (×0.25)</div>
+                        </div>
+                        <div className="pt-2">Wind pushing you: ~{component.toFixed(0)} knots</div>
                         <div className="text-gray-600 dark:text-neutral-400">
                           {isHeadwind 
                             ? '→ You\'ll cover less ground, so fly longer' 
@@ -263,7 +262,7 @@ const HoldingCalculator = () => {
                       <div className="space-y-1">
                         <div className="font-semibold">Step 3: Adjust your timing</div>
                         <div>Standard time: 60 seconds</div>
-                        <div>{isHeadwind ? 'Add' : 'Subtract'} wind effect: {isHeadwind ? '+' : '-'}{Math.abs(component).toFixed(0)} seconds</div>
+                        <div>Wind effect: {adjustment >= 0 ? '+' : ''}{adjustment.toFixed(0)} seconds</div>
                         <div className="font-semibold text-base pt-1">Final time: {results.outboundTime} seconds</div>
                       </div>
                     </div>
@@ -271,8 +270,8 @@ const HoldingCalculator = () => {
                 })()}
               </ResultCard>
             </div>
-          )}
-        </section>
+          </section>
+        )}
 
         <Footer />
       </div>
