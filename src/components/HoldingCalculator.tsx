@@ -411,8 +411,7 @@ const HoldingCalculator = () => {
                             <div>Effective angle: {Math.round(effectiveAngle)}° → <strong>{timingLabel}</strong></div>
                             {timingFactor > 0 && (
                               <>
-                                <div className="pt-2">Wind component = {Math.round(windSpdNum)} kt × {timingFactor === 1 ? '1' : timingFactor.toFixed(2)}</div>
-                                <div>= <strong>{Math.round(alongTrackWind)} kt</strong></div>
+                                <div className="pt-2">Wind component = {Math.round(windSpdNum)} kt × {timingFactor === 1 ? '1' : timingFactor.toFixed(2)} = <strong>{Math.round(alongTrackWind)} kt</strong></div>
                                 <div className="pt-2">Direct conversion: <strong>{Math.round(alongTrackWind)} kt = {Math.round(alongTrackWind)} seconds</strong></div>
                               </>
                             )}
