@@ -2,6 +2,7 @@ import { useState } from "react";
 import InputField from "./InputField";
 import ResultCard from "./ResultCard";
 import ThemeToggle from "./ThemeToggle";
+import Footer from "./Footer";
 import { calculateHoldingPattern, normalizeAngle, signedAngleDiff } from "../utils/calculations";
 import type { HoldingResults } from "../types";
 
@@ -74,17 +75,10 @@ const HoldingCalculator = () => {
     <div className="min-h-screen bg-gray-50 text-gray-900 dark:bg-slate-950 dark:text-slate-50 flex justify-center px-4 py-8">
       <div className="w-full max-w-5xl space-y-8">
         {/* Header with Theme Toggle */}
-        <header className="flex items-start justify-between gap-4">
-          <div className="flex-1">
-            <h1 className="text-2xl md:text-3xl font-semibold tracking-wide text-gray-900 dark:text-neutral-50">
-              HOLDING CORRECTION CALCULATOR
-            </h1>
-          <p className="text-sm md:text-base text-gray-600 dark:text-neutral-300 mt-2 max-w-2xl">
-            Enter magnetic wind, inbound course, and TAS to compute drift, headings
-            (single & triple drift), and suggested outbound timing. Expand each card to see
-            the exact formulas and numbers behind the result.
-          </p>
-          </div>
+        <header className="flex items-center justify-between gap-4">
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 dark:text-neutral-50">
+            Holding Calculator
+          </h1>
           <ThemeToggle />
         </header>
 
@@ -148,12 +142,12 @@ const HoldingCalculator = () => {
                 onToggle={() => toggleExpanded("outboundCourse")}
                 subtitle="Inbound track plus 180°, normalized to 0–359°."
               >
-                <pre className="text-[11px] leading-relaxed text-gray-700 dark:text-neutral-200 whitespace-pre-wrap">
-{`inboundCourse = ${normalizeAngle(inboundCourseNum || 0).toFixed(0)}°
-outboundCourse = inboundCourse + 180°
-                = ${normalizeAngle(inboundCourseNum || 0).toFixed(0)}° + 180°
-                = ${results.outboundCourse.toFixed(0)}°M (normalized)`}
-                </pre>
+                <div className="text-sm leading-relaxed text-gray-700 dark:text-neutral-200 space-y-1 font-mono">
+                  <div>Inbound Course = {normalizeAngle(inboundCourseNum || 0).toFixed(0)}°</div>
+                  <div>Outbound Course = Inbound Course + 180°</div>
+                  <div className="pl-4">= {normalizeAngle(inboundCourseNum || 0).toFixed(0)}° + 180°</div>
+                  <div className="pl-4">= {results.outboundCourse.toFixed(0)}°M (normalized)</div>
+                </div>
               </ResultCard>
 
               {/* SINGLE DRIFT */}
@@ -164,15 +158,14 @@ outboundCourse = inboundCourse + 180°
                 onToggle={() => toggleExpanded("singleDrift")}
                 subtitle="Wind correction angle for the inbound leg."
               >
-                <pre className="text-[11px] leading-relaxed text-gray-700 dark:text-neutral-200 whitespace-pre-wrap">
-{`TAS = ${tasNum.toFixed(0)} kt
-TAS (NM/min) = TAS / 60 = ${(tasNum / 60).toFixed(2)} NM/min
-Wind speed = ${windSpdNum.toFixed(0)} kt
-
-singleDrift = Wind speed / TAS(NM/min)
-            = ${windSpdNum.toFixed(0)} / ${(tasNum / 60).toFixed(2)}
-            ≈ ${results.singleDrift.toFixed(1)}°`}
-                </pre>
+                <div className="text-sm leading-relaxed text-gray-700 dark:text-neutral-200 space-y-1 font-mono">
+                  <div>TAS = {tasNum.toFixed(0)} kt</div>
+                  <div>TAS (NM/min) = TAS / 60 = {(tasNum / 60).toFixed(2)} NM/min</div>
+                  <div>Wind Speed = {windSpdNum.toFixed(0)} kt</div>
+                  <div className="pt-2">Single Drift = Wind Speed / TAS(NM/min)</div>
+                  <div className="pl-4">= {windSpdNum.toFixed(0)} / {(tasNum / 60).toFixed(2)}</div>
+                  <div className="pl-4">≈ {results.singleDrift.toFixed(1)}°</div>
+                </div>
               </ResultCard>
 
               {/* INBOUND HEADING */}
@@ -189,17 +182,15 @@ singleDrift = Wind speed / TAS(NM/min)
                   const side = diff < 0 ? "LEFT" : "RIGHT";
                   const op = diff < 0 ? "-" : "+";
                   return (
-                    <pre className="text-[11px] leading-relaxed text-gray-700 dark:text-neutral-200 whitespace-pre-wrap">
-{`windDir = ${normalizeAngle(windDirNum || 0).toFixed(0)}°M
-inboundCourse = ${inboundNorm.toFixed(0)}°M
-
-signedAngleDiff = windDir - inboundCourse
-                 = ${diff.toFixed(1)}° → wind from ${side}
-
-inboundHeading = inboundCourse ${op} singleDrift
-               = ${inboundNorm.toFixed(0)}° ${op} ${results.singleDrift.toFixed(1)}°
-               ≈ ${results.inboundHeading.toFixed(0)}°M`}
-                    </pre>
+                    <div className="text-sm leading-relaxed text-gray-700 dark:text-neutral-200 space-y-1 font-mono">
+                      <div>Wind Direction = {normalizeAngle(windDirNum || 0).toFixed(0)}°M</div>
+                      <div>Inbound Course = {inboundNorm.toFixed(0)}°M</div>
+                      <div className="pt-2">Signed Angle Diff = Wind Dir - Inbound Course</div>
+                      <div className="pl-4">= {diff.toFixed(1)}° → wind from {side}</div>
+                      <div className="pt-2">Inbound Heading = Inbound Course {op} Single Drift</div>
+                      <div className="pl-4">= {inboundNorm.toFixed(0)}° {op} {results.singleDrift.toFixed(1)}°</div>
+                      <div className="pl-4">≈ {results.inboundHeading.toFixed(0)}°M</div>
+                    </div>
                   );
                 })()}
               </ResultCard>
@@ -220,21 +211,18 @@ inboundHeading = inboundCourse ${op} singleDrift
                   const op = diff < 0 ? "-" : "+";
                   const outboundDrift = 3 * results.singleDrift;
                   return (
-                    <pre className="text-[11px] leading-relaxed text-gray-700 dark:text-neutral-200 whitespace-pre-wrap">
-{`windDir = ${normalizeAngle(windDirNum || 0).toFixed(0)}°M
-outboundCourse = ${outboundCourseCalc.toFixed(0)}°M
-
-signedAngleDiff = windDir - outboundCourse
-                 = ${diff.toFixed(1)}° → wind from ${side}
-
-outboundDrift = 3 × singleDrift
-              = 3 × ${results.singleDrift.toFixed(1)}°
-              ≈ ${outboundDrift.toFixed(1)}°
-
-outboundHeading = outboundCourse ${op} outboundDrift
-                = ${outboundCourseCalc.toFixed(0)}° ${op} ${outboundDrift.toFixed(1)}°
-                ≈ ${results.outboundHeading.toFixed(0)}°M`}
-                    </pre>
+                    <div className="text-sm leading-relaxed text-gray-700 dark:text-neutral-200 space-y-1 font-mono">
+                      <div>Wind Direction = {normalizeAngle(windDirNum || 0).toFixed(0)}°M</div>
+                      <div>Outbound Course = {outboundCourseCalc.toFixed(0)}°M</div>
+                      <div className="pt-2">Signed Angle Diff = Wind Dir - Outbound Course</div>
+                      <div className="pl-4">= {diff.toFixed(1)}° → wind from {side}</div>
+                      <div className="pt-2">Outbound Drift = 3 × Single Drift</div>
+                      <div className="pl-4">= 3 × {results.singleDrift.toFixed(1)}°</div>
+                      <div className="pl-4">≈ {outboundDrift.toFixed(1)}°</div>
+                      <div className="pt-2">Outbound Heading = Outbound Course {op} Outbound Drift</div>
+                      <div className="pl-4">= {outboundCourseCalc.toFixed(0)}° {op} {outboundDrift.toFixed(1)}°</div>
+                      <div className="pl-4">≈ {results.outboundHeading.toFixed(0)}°M</div>
+                    </div>
                   );
                 })()}
               </ResultCard>
@@ -247,21 +235,21 @@ outboundHeading = outboundCourse ${op} outboundDrift
                 onToggle={() => toggleExpanded("outboundTime")}
                 subtitle="Starts from 60 s and is adjusted using a quarter-clock estimate of the head/tailwind component."
               >
-                <pre className="text-[11px] leading-relaxed text-gray-700 dark:text-neutral-200 whitespace-pre-wrap">
-{`|wind - outboundCourse| = ${results.outboundAngleFromTrack.toFixed(1)}°
-angleFromNose = min(Δ, 180° - Δ) → 0–90°
-quarter-clock factor → head/tail component ≈ ${results.headTailComponentKt.toFixed(1)} kt
-
-If component is headwind → subtract seconds from 60
-If component is tailwind → add seconds to 60
-
-outboundTime ≈ 60 s − signed(head/tail component in kt)
-            ≈ ${results.outboundTime} s (clamped to [10, 180])`}
-                </pre>
+                <div className="text-sm leading-relaxed text-gray-700 dark:text-neutral-200 space-y-1 font-mono">
+                  <div>|Wind - Outbound Course| = {results.outboundAngleFromTrack.toFixed(1)}°</div>
+                  <div>Angle From Nose = min(Δ, 180° - Δ) → 0–90°</div>
+                  <div>Quarter-Clock Factor → Head/Tail Component ≈ {results.headTailComponentKt.toFixed(1)} kt</div>
+                  <div className="pt-2 text-xs">If component is headwind → subtract seconds from 60</div>
+                  <div className="text-xs">If component is tailwind → add seconds to 60</div>
+                  <div className="pt-2">Outbound Time ≈ 60 s − signed(head/tail component in kt)</div>
+                  <div className="pl-4">≈ {results.outboundTime} s (clamped to [10, 180])</div>
+                </div>
               </ResultCard>
             </div>
           )}
         </section>
+
+        <Footer />
       </div>
     </div>
   );

@@ -25,10 +25,7 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
     const savedTheme = localStorage.getItem("theme") as Theme | null;
     if (savedTheme) return savedTheme;
     
-    // Otherwise check system preference
-    if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-      return "dark";
-    }
+    // Default to light theme
     return "light";
   });
 
