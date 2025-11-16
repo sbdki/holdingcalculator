@@ -163,12 +163,13 @@ const QuarterClockDiagram = ({ windDirection, outboundCourse, angleWindToCourse,
           <text x="120" y="125" textAnchor="middle" className="text-xs font-bold fill-white">CENTER</text>
         </svg>
 
-        {/* Angle display */}
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mt-24 bg-white dark:bg-neutral-800 px-4 py-2 rounded-lg shadow-lg border-2 border-blue-500">
-          <div className="text-sm font-semibold text-gray-700 dark:text-gray-300">Wind to Course Angle</div>
-          <div className="text-xl font-bold text-blue-600 dark:text-blue-400">
-            {angleWindToCourse.toFixed(0)}°
-          </div>
+      </div>
+
+      {/* Angle display - moved to the right side */}
+      <div className="bg-white dark:bg-neutral-800 px-4 py-3 rounded-lg shadow-lg border-2 border-blue-500">
+        <div className="text-sm font-semibold text-gray-700 dark:text-gray-300">Wind to Course Angle</div>
+        <div className="text-2xl font-bold text-blue-600 dark:text-blue-400 text-center">
+          {angleWindToCourse.toFixed(0)}°
         </div>
       </div>
 
