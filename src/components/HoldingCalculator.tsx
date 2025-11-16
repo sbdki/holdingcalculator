@@ -272,7 +272,7 @@ const HoldingCalculator = () => {
                         <div className="bg-gray-50 dark:bg-neutral-800/50 p-4 rounded-lg space-y-1">
                           <div><strong>Wind Direction:</strong> {Math.round(normalizeAngle(windDirNum || 0))}°M</div>
                           <div><strong>Inbound Course:</strong> {Math.round(inboundNorm)}°M</div>
-                          <div className="pt-2">Signed Angle Diff = Wind Dir - Inbound Course</div>
+                          <div className="pt-2">Angle difference = {Math.round(normalizeAngle(windDirNum || 0))}° - {Math.round(inboundNorm)}°</div>
                           <div>= {Math.round(diff)}°</div>
                           <div className="pt-2">→ <strong>Wind from {side}</strong></div>
                         </div>
@@ -313,7 +313,7 @@ const HoldingCalculator = () => {
                         <div className="bg-gray-50 dark:bg-neutral-800/50 p-4 rounded-lg space-y-1">
                           <div><strong>Wind Direction:</strong> {Math.round(normalizeAngle(windDirNum || 0))}°M</div>
                           <div><strong>Outbound Course:</strong> {Math.round(outboundCourseCalc)}°M</div>
-                          <div className="pt-2">Signed Angle Diff = Wind Dir - Outbound Course</div>
+                          <div className="pt-2">Angle difference = {Math.round(normalizeAngle(windDirNum || 0))}° - {Math.round(outboundCourseCalc)}°</div>
                           <div>= {Math.round(diff)}°</div>
                           <div className="pt-2">→ <strong>Wind from {side}</strong></div>
                         </div>
