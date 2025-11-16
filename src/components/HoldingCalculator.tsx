@@ -154,11 +154,11 @@ const HoldingCalculator = () => {
 
               {/* SINGLE DRIFT */}
               <ResultCard
-                title="Single drift (max drift)"
+                title="Single drift"
                 value={`${results.singleDrift.toFixed(1)}°`}
                 expanded={!!expanded.singleDrift}
                 onToggle={() => toggleExpanded("singleDrift")}
-                subtitle="Maximum wind correction angle using clock system."
+                subtitle="Wind correction angle using clock system."
               >
                 {(() => {
                   const clockLabels: Record<number, string> = {
@@ -216,6 +216,40 @@ const HoldingCalculator = () => {
                     </div>
                   );
                 })()}
+              </ResultCard>
+
+              {/* MAX DRIFT */}
+              <ResultCard
+                title="Max drift"
+                value={`${results.maxDrift.toFixed(1)}°`}
+                expanded={!!expanded.maxDrift}
+                onToggle={() => toggleExpanded("maxDrift")}
+                subtitle="Maximum possible wind correction angle (direct crosswind)."
+              >
+                <div className="text-sm leading-relaxed text-gray-700 dark:text-neutral-200 space-y-4">
+                  <div className="space-y-2">
+                    <div className="font-semibold text-base">Step 1: Convert TAS to nautical miles per minute</div>
+                    <div className="space-y-1 font-mono text-sm">
+                      <div>TAS = {tasNum.toFixed(0)} kt</div>
+                      <div>TAS (NM/min) = TAS / 60</div>
+                      <div className="pl-4">= {tasNum.toFixed(0)} / 60</div>
+                      <div className="pl-4">= {(tasNum / 60).toFixed(2)} NM/min</div>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <div className="font-semibold text-base">Step 2: Calculate max drift (full crosswind)</div>
+                    <div className="space-y-1 font-mono text-sm">
+                      <div>Wind Speed = {windSpdNum.toFixed(0)} kt</div>
+                      <div className="pt-1">Max Drift = Wind Speed / TAS(NM/min)</div>
+                      <div className="pl-4">= {windSpdNum.toFixed(0)} / {(tasNum / 60).toFixed(2)}</div>
+                      <div className="pl-4">≈ {results.maxDrift.toFixed(1)}°</div>
+                    </div>
+                    <div className="text-gray-600 dark:text-neutral-400 text-sm pt-2">
+                      → This is the maximum drift if wind was 90° crosswind
+                    </div>
+                  </div>
+                </div>
               </ResultCard>
 
               {/* INBOUND HEADING */}

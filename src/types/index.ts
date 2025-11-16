@@ -14,6 +14,7 @@ export interface HoldingInputs {
 export interface HoldingResults {
   outboundCourse: number;
   singleDrift: number;
+  maxDrift: number;
   inboundHeading: number;
   outboundHeading: number;
   outboundTime: number;

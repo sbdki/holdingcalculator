@@ -132,6 +132,7 @@ export function computeQuarterClockFactor(angleFromNose: number): number {
 export interface HoldingCalculation {
   outboundCourse: number;
   singleDrift: number;
+  maxDrift: number;
   inboundHeading: number;
   outboundHeading: number;
   outboundTime: number;
@@ -161,6 +162,10 @@ export function calculateHoldingPattern(
   // Calculate single drift using clock system
   const driftResult = computeSingleDrift(windDirNorm, inboundCourseNorm, outboundCourse, windSpeed, tas);
   const singleDrift = driftResult.drift;
+  
+  // Calculate max drift using simple formula
+  const tasNmPerMin = tas / 60;
+  const maxDrift = tasNmPerMin > 0 ? windSpeed / tasNmPerMin : 0;
   
   // Inbound heading: course ± single drift
   const inboundDiff = signedAngleDiff(windDirNorm, inboundCourseNorm);
@@ -196,6 +201,7 @@ export function calculateHoldingPattern(
   return {
     outboundCourse,
     singleDrift,
+    maxDrift,
     inboundHeading,
     outboundHeading,
     outboundTime: Math.round(outboundTime),
