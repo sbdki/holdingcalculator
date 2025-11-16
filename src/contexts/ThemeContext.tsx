@@ -32,15 +32,19 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     // Apply theme to document root
     const root = document.documentElement;
+    root.classList.remove("dark"); // Always start with removing dark
     if (theme === "dark") {
       root.classList.add("dark");
-    } else {
-      root.classList.remove("dark");
     }
     
     // Save to localStorage
     localStorage.setItem("theme", theme);
   }, [theme]);
+
+  // Ensure light theme on mount
+  useEffect(() => {
+    document.documentElement.classList.remove("dark");
+  }, []);
 
   const toggleTheme = () => {
     setTheme((prev) => (prev === "light" ? "dark" : "light"));

@@ -232,38 +232,87 @@ const HoldingCalculator = () => {
                   const component = results.headTailComponentKt;
                   const adjustment = isHeadwind ? component : -component;
                   
+                  // Calculate angle from nose (for quarter-clock)
+                  const angleFromNose = absLegDiff <= 90 ? absLegDiff : 180 - absLegDiff;
+                  
+                  // Determine which quarter-clock band
+                  let band = '';
+                  let factor = 0;
+                  if (angleFromNose < 15) {
+                    band = '0–15°';
+                    factor = 1.0;
+                  } else if (angleFromNose < 45) {
+                    band = '15–45°';
+                    factor = 0.75;
+                  } else if (angleFromNose < 75) {
+                    band = '45–75°';
+                    factor = 0.5;
+                  } else {
+                    band = '75–90°';
+                    factor = 0.25;
+                  }
+                  
                   return (
                     <div className="text-sm leading-relaxed text-gray-700 dark:text-neutral-200 space-y-4">
-                      <div className="space-y-1">
-                        <div className="font-semibold">Step 1: Check the wind angle</div>
+                      <div className="space-y-2">
+                        <div className="font-semibold text-base">Step 1: Find the angle from your nose</div>
                         <div>Wind angle to outbound track: {absLegDiff.toFixed(0)}°</div>
+                        {absLegDiff > 90 ? (
+                          <>
+                            <div className="text-gray-600 dark:text-neutral-400 text-sm">
+                              This is more than 90°, so we measure from the back:
+                            </div>
+                            <div className="pl-4">180° - {absLegDiff.toFixed(0)}° = {angleFromNose.toFixed(0)}° from nose</div>
+                          </>
+                        ) : (
+                          <div className="pl-4">This is {angleFromNose.toFixed(0)}° from your nose (front of plane)</div>
+                        )}
                         <div className="text-gray-600 dark:text-neutral-400">
                           {isHeadwind ? '→ This is a headwind (slows you down)' : '→ This is a tailwind (speeds you up)'}
                         </div>
                       </div>
 
-                      <div className="space-y-1">
-                        <div className="font-semibold">Step 2: Estimate wind effect (Quarter-Clock Method)</div>
-                        <div className="text-gray-600 dark:text-neutral-400 text-xs space-y-1 mt-1">
-                          <div>A pilot mental-math rule based on wind angle:</div>
-                          <div className="pl-2">• 0–15° from nose → 100% component (×1.0)</div>
-                          <div className="pl-2">• 15–45° → 75% component (×0.75)</div>
-                          <div className="pl-2">• 45–75° → 50% component (×0.5)</div>
-                          <div className="pl-2">• 75–90° → 25% component (×0.25)</div>
+                      <div className="space-y-2">
+                        <div className="font-semibold text-base">Step 2: Use the Quarter-Clock Method</div>
+                        <div className="text-gray-600 dark:text-neutral-400 text-sm">
+                          A pilot trick to estimate wind effect based on angle:
                         </div>
-                        <div className="pt-2">Wind pushing you: ~{component.toFixed(0)} knots</div>
+                        <div className="space-y-1 text-sm">
+                          <div className={angleFromNose < 15 ? 'font-semibold text-blue-600 dark:text-blue-400' : ''}>
+                            • 0–15° from nose → 100% of wind (×1.0)
+                          </div>
+                          <div className={angleFromNose >= 15 && angleFromNose < 45 ? 'font-semibold text-blue-600 dark:text-blue-400' : ''}>
+                            • 15–45° from nose → 75% of wind (×0.75)
+                          </div>
+                          <div className={angleFromNose >= 45 && angleFromNose < 75 ? 'font-semibold text-blue-600 dark:text-blue-400' : ''}>
+                            • 45–75° from nose → 50% of wind (×0.5)
+                          </div>
+                          <div className={angleFromNose >= 75 ? 'font-semibold text-blue-600 dark:text-blue-400' : ''}>
+                            • 75–90° from nose → 25% of wind (×0.25)
+                          </div>
+                        </div>
+                        <div className="pt-2">
+                          <div>Your angle: {angleFromNose.toFixed(0)}° falls in the <span className="font-semibold">{band}</span> range</div>
+                          <div>So we use the factor: <span className="font-semibold">×{factor}</span></div>
+                        </div>
+                        <div className="pt-2">
+                          <div>Wind effect calculation:</div>
+                          <div className="pl-4">{windSpdNum.toFixed(0)} knots × {factor} = {component.toFixed(0)} knots</div>
+                        </div>
                         <div className="text-gray-600 dark:text-neutral-400">
                           {isHeadwind 
-                            ? '→ You\'ll cover less ground, so fly longer' 
-                            : '→ You\'ll cover more ground, so fly shorter'}
+                            ? '→ Headwind: You\'ll cover less ground, so fly longer' 
+                            : '→ Tailwind: You\'ll cover more ground, so fly shorter'}
                         </div>
                       </div>
 
-                      <div className="space-y-1">
-                        <div className="font-semibold">Step 3: Adjust your timing</div>
-                        <div>Standard time: 60 seconds</div>
+                      <div className="space-y-2">
+                        <div className="font-semibold text-base">Step 3: Adjust your timing</div>
+                        <div>Standard outbound time: 60 seconds</div>
                         <div>Wind effect: {adjustment >= 0 ? '+' : ''}{adjustment.toFixed(0)} seconds</div>
-                        <div className="font-semibold text-base pt-1">Final time: {results.outboundTime} seconds</div>
+                        <div className="pt-2 font-semibold text-base text-blue-600 dark:text-blue-400">
+                          Final time: {results.outboundTime} seconds
+                        </div>
                       </div>
                     </div>
                   );
