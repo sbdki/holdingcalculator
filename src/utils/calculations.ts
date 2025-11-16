@@ -219,10 +219,13 @@ export function calculateHoldingPattern(
   const isHeadwind = inHeadwindZone;
   const isTailwind = !isHeadwind;
   
-  // Step 3: Calculate effective angle from reference direction
+  // Step 3: Calculate angle from reference direction
   const referenceDirection = isHeadwind ? outboundCourse : tailDirection;
-  let effectiveAngle = Math.abs(windDirNorm - referenceDirection);
-  if (effectiveAngle > 180) effectiveAngle = 360 - effectiveAngle;
+  let angleFromReference = Math.abs(windDirNorm - referenceDirection);
+  if (angleFromReference > 180) angleFromReference = 360 - angleFromReference;
+  
+  // Use the OPPOSITE angle (90° - angle) for clock method
+  const effectiveAngle = 90 - angleFromReference;
   
   // Store detailed angles for display
   let angleFromHead = Math.abs(windDirNorm - outboundCourse);
@@ -231,27 +234,26 @@ export function calculateHoldingPattern(
   let angleFromTail = Math.abs(windDirNorm - tailDirection);
   if (angleFromTail > 180) angleFromTail = 360 - angleFromTail;
   
-  // Timing clock method: round to closest marker
-  // 0-30° full, 30-60° half, 60-90° none
+  // Timing clock method: round to closest marker (based on 60°)
+  // 15°, 30°, 45°, 60°
   let timingFactor: number;
-  if (effectiveAngle < 45) {
-    // Closer to 0° or 30°
-    timingFactor = effectiveAngle < 15 ? 1.0 : 0.5;
-  } else if (effectiveAngle < 75) {
-    // Closer to 60°
-    timingFactor = 1.0;  // Full wind (60° = full crosswind for timing)
+  if (effectiveAngle < 7.5) {
+    timingFactor = 0.0;  // 0° = no effect
+  } else if (effectiveAngle < 22.5) {
+    timingFactor = 0.25;  // 15° = 1/4
+  } else if (effectiveAngle < 37.5) {
+    timingFactor = 0.5;  // 30° = 1/2
+  } else if (effectiveAngle < 52.5) {
+    timingFactor = 0.75;  // 45° = 3/4
   } else {
-    timingFactor = 0.0;  // Beyond 75°, no timing effect
+    timingFactor = 1.0;  // 60°+ = full
   }
   
   const alongTrackWind = windSpeed * timingFactor;
   
-  // Calculate timing correction: divide by TAS to get seconds per nautical mile effect
-  const tasNmPerMinTiming = tas / 60;
-  const secondsPerKnot = tasNmPerMinTiming > 0 ? 1.0 / tasNmPerMinTiming : 0;
-  
+  // Direct conversion: knots = seconds (no TAS division)
   // Headwind: add time (fly longer), Tailwind: subtract time (fly shorter)
-  const timingCorrection = isHeadwind ? alongTrackWind * secondsPerKnot : -alongTrackWind * secondsPerKnot;
+  const timingCorrection = isHeadwind ? alongTrackWind : -alongTrackWind;
   
   let outboundTime = 60 + timingCorrection;
   outboundTime = Math.max(10, Math.min(180, outboundTime));

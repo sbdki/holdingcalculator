@@ -359,29 +359,28 @@ const HoldingCalculator = () => {
                   const effectiveAngle = results.timingEffectiveAngle;
                   const alongTrackWind = results.timingAlongTrackWind;
                   
-                  // Timing clock method factor (round to closest)
+                  // Timing clock method factor (round to closest, based on 60°)
                   let timingFactor: number;
                   let timingLabel: string;
-                  if (effectiveAngle < 45) {
-                    if (effectiveAngle < 15) {
-                      timingFactor = 1.0;
-                      timingLabel = "Full wind";
-                    } else {
-                      timingFactor = 0.5;
-                      timingLabel = "Half wind";
-                    }
-                  } else if (effectiveAngle < 75) {
+                  if (effectiveAngle < 7.5) {
+                    timingFactor = 0.0;
+                    timingLabel = "No effect";
+                  } else if (effectiveAngle < 22.5) {
+                    timingFactor = 0.25;
+                    timingLabel = "1/4 wind";
+                  } else if (effectiveAngle < 37.5) {
+                    timingFactor = 0.5;
+                    timingLabel = "1/2 wind";
+                  } else if (effectiveAngle < 52.5) {
+                    timingFactor = 0.75;
+                    timingLabel = "3/4 wind";
+                  } else {
                     timingFactor = 1.0;
                     timingLabel = "Full wind";
-                  } else {
-                    timingFactor = 0.0;
-                    timingLabel = "No timing effect";
                   }
                   
-                  const tasNmPerMin = tasNum / 60;
-                  const timingCorrection = isTailwind 
-                    ? -(alongTrackWind / tasNmPerMin) 
-                    : (alongTrackWind / tasNmPerMin);
+                  // Direct conversion: knots = seconds
+                  const timingCorrection = isTailwind ? -alongTrackWind : alongTrackWind;
                   
                   return (
                     <div className="text-sm leading-relaxed text-gray-700 dark:text-neutral-200">
@@ -401,22 +400,21 @@ const HoldingCalculator = () => {
                       <div className="border border-gray-200 dark:border-neutral-600 rounded-xl p-5 mb-4">
                         <h3 className="mt-0 mb-3 text-lg font-semibold">Step 2 — Timing clock method</h3>
                         <div className="bg-gray-50 dark:bg-neutral-800/50 p-4 rounded-lg">
-                          <div className="mb-3"><strong>Timing clock rules (round to closest):</strong></div>
+                          <div className="mb-3"><strong>Timing clock rules (based on 60°):</strong></div>
                           <div className="space-y-0.5">
-                            <div>• 0–15° → Full wind effect</div>
-                            <div>• 15–45° → Half wind effect</div>
-                            <div>• 45–75° → Full wind effect</div>
-                            <div>• 75–90° → No timing effect</div>
+                            <div>• 15° → 1/4 wind</div>
+                            <div>• 30° → 1/2 wind</div>
+                            <div>• 45° → 3/4 wind</div>
+                            <div>• 60° → Full wind</div>
                           </div>
                           <div className="pt-3 space-y-1">
                             <div>Effective angle: {Math.round(effectiveAngle)}° → <strong>{timingLabel}</strong></div>
-                            <div className="pt-2">Along-track wind = {Math.round(windSpdNum)} kt × {timingFactor.toFixed(1)}</div>
-                            {timingFactor > 0 && <div>= <strong>{Math.round(alongTrackWind)} kt</strong></div>}
                             {timingFactor > 0 && (
-                              <div className="pt-2">
-                                <div>Timing correction = {Math.round(alongTrackWind)} kt ÷ (TAS {Math.round(tasNum)} ÷ 60)</div>
-                                <div>= <strong>{Math.round(Math.abs(timingCorrection))} seconds</strong></div>
-                              </div>
+                              <>
+                                <div className="pt-2">Wind component = {Math.round(windSpdNum)} kt × {timingFactor === 1 ? '1' : timingFactor.toFixed(2)}</div>
+                                <div>= <strong>{Math.round(alongTrackWind)} kt</strong></div>
+                                <div className="pt-2">Direct conversion: <strong>{Math.round(alongTrackWind)} kt = {Math.round(alongTrackWind)} seconds</strong></div>
+                              </>
                             )}
                           </div>
                         </div>
