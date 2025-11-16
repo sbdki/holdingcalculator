@@ -67,8 +67,8 @@ const QuarterClockDiagram = ({ windDirection, outboundCourse, angleWindToCourse,
             
             // These angles are relative to outbound course, not north
             // Add outbound course to rotate zones
-            const absStart = (normCourse + startAngle) % 360;
-            const absEnd = (normCourse + endAngle) % 360;
+            const absStart = (normCourse + startAngle);
+            const absEnd = (normCourse + endAngle);
             
             // Convert to SVG path (0° = top = -90° in standard coords)
             const start = ((absStart - 90) * Math.PI) / 180;
@@ -96,35 +96,47 @@ const QuarterClockDiagram = ({ windDirection, outboundCourse, angleWindToCourse,
           {/* Clock circle outline */}
           <circle cx="120" cy="120" r="100" fill="none" stroke="#9ca3af" strokeWidth="2" className="dark:stroke-neutral-600" />
 
-          {/* Cardinal direction markers - only show quarter */}
-          <g className="fill-gray-700 dark:fill-gray-300">
-            {/* 0° - North (top) */}
-            <text x="120" y="22" textAnchor="middle" className="text-sm font-bold">0°</text>
-            {/* 90° - East (right) */}
-            <text x="215" y="125" textAnchor="middle" className="text-sm font-bold">90°</text>
-            {/* 180° - South (bottom) */}
-            <text x="120" y="220" textAnchor="middle" className="text-sm font-bold">180°</text>
-            {/* 270° - West (left) */}
-            <text x="25" y="125" textAnchor="middle" className="text-sm font-bold">270°</text>
-          </g>
-
-          {/* Quarter-clock labels (15°, 45°, 75° marks) */}
-          <g className="fill-gray-700 dark:fill-gray-300 text-xs font-semibold" transform={`rotate(${normCourse}, 120, 120)`}>
-            {/* 15° mark - rotated with course */}
-            <text x="190" y="70" textAnchor="middle">
+          {/* Quarter-clock labels REPLACING compass marks - rotate with outbound course */}
+          <g className="fill-gray-700 dark:fill-gray-300 font-semibold" transform={`rotate(${normCourse}, 120, 120)`}>
+            {/* 0° position - Full/60s */}
+            <text x="120" y="22" textAnchor="middle" className="text-xs">
+              <tspan x="120" dy="0">Full</tspan>
+              <tspan x="120" dy="10">60s</tspan>
+            </text>
+            
+            {/* 15° mark */}
+            <text x="190" y="70" textAnchor="middle" className="text-xs">
               <tspan x="190" dy="0">15°</tspan>
-              <tspan x="190" dy="12">3/4</tspan>
+              <tspan x="190" dy="10">3/4</tspan>
             </text>
+            
             {/* 45° mark */}
-            <text x="200" y="120" textAnchor="middle">
-              <tspan x="200" dy="0">45°</tspan>
-              <tspan x="200" dy="12">1/2</tspan>
+            <text x="208" y="120" textAnchor="middle" className="text-xs">
+              <tspan x="208" dy="0">45°</tspan>
+              <tspan x="208" dy="10">1/2</tspan>
             </text>
+            
             {/* 75° mark */}
-            <text x="190" y="170" textAnchor="middle">
+            <text x="190" y="170" textAnchor="middle" className="text-xs">
               <tspan x="190" dy="0">75°</tspan>
-              <tspan x="190" dy="12">1/4</tspan>
+              <tspan x="190" dy="10">1/4</tspan>
             </text>
+            
+            {/* 90° position */}
+            <text x="120" y="218" textAnchor="middle" className="text-xs">
+              <tspan x="120" dy="0">90°</tspan>
+              <tspan x="120" dy="10">0</tspan>
+            </text>
+          </g>
+          
+          {/* Fixed compass marks (don't rotate) */}
+          <g className="fill-gray-400 dark:fill-gray-500">
+            {/* 180° - South (bottom) */}
+            <text x="120" y="220" textAnchor="middle" className="text-xs">180°</text>
+            {/* 270° - West (left) */}
+            <text x="25" y="125" textAnchor="middle" className="text-xs">270°</text>
+            {/* 360°/0° indicator (top) - if not at 0 */}
+            <text x="120" y="15" textAnchor="middle" className="text-xs">N</text>
           </g>
 
           {/* Center circle */}
@@ -143,13 +155,8 @@ const QuarterClockDiagram = ({ windDirection, outboundCourse, angleWindToCourse,
               strokeDasharray="6,4"
             />
             {/* Outbound label on the line */}
-            <text x="120" y="18" textAnchor="middle" className="text-xs font-bold fill-green-600 dark:fill-green-400">
-              <tspan x="120" dy="0">OUTBOUND</tspan>
-            </text>
-            {/* Full label at 0° */}
-            <text x="120" y="38" textAnchor="middle" className="text-xs font-bold fill-gray-700 dark:fill-gray-300">
-              <tspan x="120" dy="0">Full</tspan>
-              <tspan x="120" dy="12">60s</tspan>
+            <text x="120" y="40" textAnchor="middle" className="text-[10px] font-bold fill-green-600 dark:fill-green-400">
+              OUTBOUND
             </text>
           </g>
           
