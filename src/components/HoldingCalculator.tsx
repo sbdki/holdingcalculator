@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import InputField from "./InputField";
 import ResultCard from "./ResultCard";
 import ThemeToggle from "./ThemeToggle";
@@ -16,12 +16,12 @@ import type { HoldingResults } from "../types";
  * - Dark mode support
  * - Responsive design
  */
-const HoldingCalculator: React.FC = () => {
+const HoldingCalculator = () => {
   // Input state
   const [windDirection, setWindDirection] = useState<string>("170");
   const [windSpeed, setWindSpeed] = useState<string>("16");
   const [inboundCourse, setInboundCourse] = useState<string>("48");
-  const [groundspeed, setGroundspeed] = useState<string>("120");
+  const [tas, setTas] = useState<string>("120");
 
   // UI state
   const [error, setError] = useState<string | null>(null);
@@ -39,16 +39,16 @@ const HoldingCalculator: React.FC = () => {
     const windDirNum = Number(windDirection);
     const windSpdNum = Number(windSpeed);
     const inboundCrsNum = Number(inboundCourse);
-    const gsNum = Number(groundspeed);
+    const tasNum = Number(tas);
 
-    if ([windDirNum, windSpdNum, inboundCrsNum, gsNum].some((v) => Number.isNaN(v))) {
+    if ([windDirNum, windSpdNum, inboundCrsNum, tasNum].some((v) => Number.isNaN(v))) {
       setError("Please enter valid numeric values.");
       setResults(null);
       return;
     }
 
-    if (gsNum <= 0) {
-      setError("Groundspeed must be greater than 0.");
+    if (tasNum <= 0) {
+      setError("TAS must be greater than 0.");
       setResults(null);
       return;
     }
@@ -58,7 +58,7 @@ const HoldingCalculator: React.FC = () => {
       windDirNum,
       windSpdNum,
       inboundCrsNum,
-      gsNum
+      tasNum
     );
 
     setResults(calculatedResults);
@@ -66,7 +66,7 @@ const HoldingCalculator: React.FC = () => {
 
   // Parse numeric values for display in math breakdowns
   const inboundCourseNum = Number(inboundCourse);
-  const gsNum = Number(groundspeed);
+  const tasNum = Number(tas);
   const windDirNum = Number(windDirection);
   const windSpdNum = Number(windSpeed);
 
@@ -79,11 +79,11 @@ const HoldingCalculator: React.FC = () => {
             <h1 className="text-2xl md:text-3xl font-semibold tracking-wide text-gray-900 dark:text-neutral-50">
               HOLDING CORRECTION CALCULATOR
             </h1>
-            <p className="text-sm md:text-base text-gray-600 dark:text-neutral-300 mt-2 max-w-2xl">
-              Enter magnetic wind, inbound course, and groundspeed to compute drift, headings
-              (single & triple drift), and suggested outbound timing. Expand each card to see
-              the exact formulas and numbers behind the result.
-            </p>
+          <p className="text-sm md:text-base text-gray-600 dark:text-neutral-300 mt-2 max-w-2xl">
+            Enter magnetic wind, inbound course, and TAS to compute drift, headings
+            (single & triple drift), and suggested outbound timing. Expand each card to see
+            the exact formulas and numbers behind the result.
+          </p>
           </div>
           <ThemeToggle />
         </header>
@@ -106,9 +106,9 @@ const HoldingCalculator: React.FC = () => {
               onChange={setInboundCourse}
             />
             <InputField
-              label="GROUNDSPEED (KT)"
-              value={groundspeed}
-              onChange={setGroundspeed}
+              label="TAS (KT)"
+              value={tas}
+              onChange={setTas}
             />
           </div>
           <div className="mt-4 flex flex-wrap items-center gap-3">
@@ -165,12 +165,12 @@ outboundCourse = inboundCourse + 180°
                 subtitle="Wind correction angle for the inbound leg."
               >
                 <pre className="text-[11px] leading-relaxed text-gray-700 dark:text-neutral-200 whitespace-pre-wrap">
-{`GS = ${gsNum.toFixed(0)} kt
-GS (NM/min) = GS / 60 = ${(gsNum / 60).toFixed(2)} NM/min
+{`TAS = ${tasNum.toFixed(0)} kt
+TAS (NM/min) = TAS / 60 = ${(tasNum / 60).toFixed(2)} NM/min
 Wind speed = ${windSpdNum.toFixed(0)} kt
 
-singleDrift = Wind speed / GS(NM/min)
-            = ${windSpdNum.toFixed(0)} / ${(gsNum / 60).toFixed(2)}
+singleDrift = Wind speed / TAS(NM/min)
+            = ${windSpdNum.toFixed(0)} / ${(tasNum / 60).toFixed(2)}
             ≈ ${results.singleDrift.toFixed(1)}°`}
                 </pre>
               </ResultCard>

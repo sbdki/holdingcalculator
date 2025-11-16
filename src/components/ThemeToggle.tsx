@@ -1,4 +1,3 @@
-import React from "react";
 import { useTheme } from "../contexts/ThemeContext";
 
 /**
@@ -10,7 +9,7 @@ import { useTheme } from "../contexts/ThemeContext";
  * - Accessible button with clear visual feedback
  * - Matches app color scheme (black/white contrast)
  */
-const ThemeToggle: React.FC = () => {
+const ThemeToggle = () => {
   const { theme, toggleTheme } = useTheme();
 
   return (

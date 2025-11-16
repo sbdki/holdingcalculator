@@ -1,4 +1,3 @@
-import React from "react";
 import type { InputFieldProps } from "../types";
 
 /**
@@ -7,7 +6,7 @@ import type { InputFieldProps } from "../types";
  * Purpose: Reusable numeric input field with label
  * Usage: For collecting wind, course, and speed values
  */
-const InputField: React.FC<InputFieldProps> = ({ label, value, onChange }) => {
+const InputField = ({ label, value, onChange }: InputFieldProps) => {
   return (
     <div>
       <label className="block text-xs font-medium text-gray-700 mb-1 dark:text-neutral-300">

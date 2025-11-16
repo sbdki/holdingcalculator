@@ -1,4 +1,3 @@
-import React from "react";
 import type { ResultCardProps } from "../types";
 
 /**
@@ -11,14 +10,14 @@ import type { ResultCardProps } from "../types";
  * - Expandable/collapsible math breakdown
  * - Responsive layout
  */
-const ResultCard: React.FC<ResultCardProps> = ({
+const ResultCard = ({
   title,
   subtitle,
   value,
   expanded,
   onToggle,
   children,
-}) => {
+}: ResultCardProps) => {
   return (
     <div className="p-5 bg-white border border-gray-200 shadow-2xs rounded-xl dark:bg-neutral-700/30 dark:border-neutral-700">
       <div className="grid sm:grid-cols-12 gap-4">

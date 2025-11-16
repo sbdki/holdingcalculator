@@ -2,6 +2,8 @@
  * Type definitions for Holding Calculator
  */
 
+import type { ReactNode } from "react";
+
 export interface HoldingInputs {
   windDirection: string;
   windSpeed: string;
@@ -31,5 +33,5 @@ export interface ResultCardProps {
   value: string;
   expanded: boolean;
   onToggle: () => void;
-  children: React.ReactNode;
+  children: ReactNode;
 }
