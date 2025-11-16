@@ -375,11 +375,12 @@ const HoldingCalculator = () => {
                       <div className="border border-gray-200 dark:border-neutral-600 rounded-xl p-5 mb-4">
                         <h3 className="mt-0 mb-3 text-lg font-semibold">Step 1 — Determine headwind or tailwind</h3>
                         <div className="bg-gray-50 dark:bg-neutral-800/50 p-4 rounded-lg space-y-1">
-                          <div><strong>Wind Direction:</strong> {Math.round(normalizeAngle(windDirNum || 0))}°</div>
+                          <div><strong>Wind FROM:</strong> {Math.round(normalizeAngle(windDirNum || 0))}°</div>
                           <div><strong>Outbound Heading:</strong> {Math.round(results.outboundCourse)}°</div>
-                          <div className="pt-2">Angle from tail: {Math.round(results.timingAngleFromTail)}°</div>
-                          <div>Angle from head: {Math.round(results.timingAngleFromHead)}°</div>
+                          <div className="pt-2">Angle from head (nose): {Math.round(results.timingAngleFromHead)}°</div>
+                          <div>Angle from tail: {Math.round(results.timingAngleFromTail)}°</div>
                           <div className="pt-2">→ <strong>{isTailwind ? 'Tailwind' : 'Headwind'}</strong> (effective angle = {Math.round(effectiveAngle)}°)</div>
+                          <div className="text-sm text-gray-600 dark:text-neutral-400 pt-1">(Wind is closer to the {isTailwind ? 'tail' : 'head'} direction)</div>
                         </div>
                       </div>
 
@@ -406,7 +407,7 @@ const HoldingCalculator = () => {
                           <div>Standard time = 60 seconds</div>
                           <div className="pt-2">Timing correction = {timingCorrection >= 0 ? '+' : ''}{Math.round(timingCorrection)} seconds</div>
                           <div className="text-sm text-gray-600 dark:text-neutral-400">({isTailwind ? 'Tailwind: subtract time (fly shorter)' : 'Headwind: add time (fly longer)'})</div>
-                          <div className="pt-2">Final time = 60 {timingCorrection >= 0 ? '+' : ''} ({Math.round(timingCorrection)})</div>
+                          <div className="pt-2">Final time = 60 + ({Math.round(timingCorrection)})</div>
                           <div>= <strong>{results.outboundTime} seconds</strong></div>
                         </div>
                       </div>
