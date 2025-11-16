@@ -26,6 +26,12 @@ export interface HoldingResults {
   driftUsedLeg: 'inbound' | 'outbound';
   driftRelativeAngle: number;
   driftCrosswind: number;
+  // Timing calculation details
+  timingAngleFromTail: number;
+  timingAngleFromHead: number;
+  timingIsTailwind: boolean;
+  timingEffectiveAngle: number;
+  timingAlongTrackWind: number;
 }
 
 export interface InputFieldProps {

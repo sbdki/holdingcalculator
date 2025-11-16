@@ -146,6 +146,12 @@ export interface HoldingCalculation {
   driftUsedLeg: 'inbound' | 'outbound';
   driftRelativeAngle: number;
   driftCrosswind: number;
+  // Timing calculation details
+  timingAngleFromTail: number;
+  timingAngleFromHead: number;
+  timingIsTailwind: boolean;
+  timingEffectiveAngle: number;
+  timingAlongTrackWind: number;
 }
 
 export function calculateHoldingPattern(
@@ -188,16 +194,40 @@ export function calculateHoldingPattern(
       : outboundCourse + outboundDrift
   );
   
-  // Compute outbound timing adjustment
-  const absLegDiff = Math.abs(outboundDiff);
-  const angleFromNose = absLegDiff <= 90 ? absLegDiff : 180 - absLegDiff;
-  const factor = computeQuarterClockFactor(angleFromNose);
-  const headTailComponentKt = windSpeed * factor;
-  const isHeadwind = absLegDiff <= 90;
-  const signedHeadTailKt = isHeadwind ? headTailComponentKt : -headTailComponentKt;
+  // Compute outbound timing adjustment using TIMING clock method
+  // Different from drift calculation!
   
-  // Start with 60s, adjust by head/tail component, clamp to reasonable range
-  let outboundTime = 60 - signedHeadTailKt;
+  // Determine angles from tail and head
+  const tailDir = outboundCourse;
+  const headDir = normalizeAngle(outboundCourse + 180);
+  
+  let angleFromTail = Math.abs(windDirNorm - tailDir);
+  if (angleFromTail > 180) angleFromTail = 360 - angleFromTail;
+  
+  let angleFromHead = Math.abs(windDirNorm - headDir);
+  if (angleFromHead > 180) angleFromHead = 360 - angleFromHead;
+  
+  // Determine if headwind or tailwind
+  const isTailwind = angleFromTail < angleFromHead;
+  const effectiveAngle = isTailwind ? angleFromTail : angleFromHead;
+  
+  // Timing clock method: 0-30° full, 30-60° half, 60-90° none
+  let timingFactor: number;
+  if (effectiveAngle <= 30) {
+    timingFactor = 1.0;
+  } else if (effectiveAngle <= 60) {
+    timingFactor = 0.5;
+  } else {
+    timingFactor = 0.0;
+  }
+  
+  const alongTrackWind = windSpeed * timingFactor;
+  const secondsPerKnot = 60 / 60; // For 60-second target legs
+  
+  // Tailwind: subtract time (fly shorter), Headwind: add time (fly longer)
+  const timingCorrection = isTailwind ? -alongTrackWind * secondsPerKnot : alongTrackWind * secondsPerKnot;
+  
+  let outboundTime = 60 + timingCorrection;
   outboundTime = Math.max(10, Math.min(180, outboundTime));
   
   return {
@@ -207,13 +237,19 @@ export function calculateHoldingPattern(
     inboundHeading,
     outboundHeading,
     outboundTime: Math.round(outboundTime),
-    headTailComponentKt,
-    outboundAngleFromTrack: absLegDiff,
+    headTailComponentKt: alongTrackWind,
+    outboundAngleFromTrack: effectiveAngle,
     // Single drift details
     driftAngleToInbound: driftResult.angleToInbound,
     driftAngleToOutbound: driftResult.angleToOutbound,
     driftUsedLeg: driftResult.usedLeg,
     driftRelativeAngle: driftResult.relativeAngle,
     driftCrosswind: driftResult.crosswind,
+    // Timing details
+    timingAngleFromTail: angleFromTail,
+    timingAngleFromHead: angleFromHead,
+    timingIsTailwind: isTailwind,
+    timingEffectiveAngle: effectiveAngle,
+    timingAlongTrackWind: alongTrackWind,
   };
 }

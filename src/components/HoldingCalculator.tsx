@@ -350,78 +350,63 @@ const HoldingCalculator = () => {
                 subtitle="How long to fly outbound before turning back."
               >
                 {(() => {
-                  const absLegDiff = results.outboundAngleFromTrack;
-                  const isHeadwind = absLegDiff <= 90;
-                  const component = results.headTailComponentKt;
+                  const isTailwind = results.timingIsTailwind;
+                  const effectiveAngle = results.timingEffectiveAngle;
+                  const alongTrackWind = results.timingAlongTrackWind;
                   
-                  // Calculate angle for quarter-clock (WIND to COURSE, not nose!)
-                  const angleWindToCourse = absLegDiff <= 90 ? absLegDiff : 180 - absLegDiff;
+                  // Timing clock method factor
+                  let timingFactor: number;
+                  let timingLabel: string;
+                  if (effectiveAngle <= 30) {
+                    timingFactor = 1.0;
+                    timingLabel = "Full wind";
+                  } else if (effectiveAngle <= 60) {
+                    timingFactor = 0.5;
+                    timingLabel = "Half wind";
+                  } else {
+                    timingFactor = 0.0;
+                    timingLabel = "No timing effect";
+                  }
                   
-                  // Determine quarter-clock factor
-                  const getQuarterClockFactor = (angle: number): number => {
-                    if (angle < 7.5) return 0;
-                    if (angle < 22.5) return 0.25;
-                    if (angle < 37.5) return 0.5;
-                    if (angle < 52.5) return 0.75;
-                    return 1.0;
-                  };
-                  const factor = getQuarterClockFactor(angleWindToCourse);
-                  const factorLabel = factor === 1.0 ? "Full" : factor === 0.75 ? "3/4" : factor === 0.5 ? "1/2" : factor === 0.25 ? "1/4" : "None";
+                  const timingCorrection = isTailwind ? -alongTrackWind : alongTrackWind;
                   
                   return (
                     <div className="text-sm leading-relaxed text-gray-700 dark:text-neutral-200">
                       <div className="border border-gray-200 dark:border-neutral-600 rounded-xl p-5 mb-4">
-                        <h3 className="mt-0 mb-3 text-lg font-semibold">Step 1 — Wind angle</h3>
+                        <h3 className="mt-0 mb-3 text-lg font-semibold">Step 1 — Determine headwind or tailwind</h3>
                         <div className="bg-gray-50 dark:bg-neutral-800/50 p-4 rounded-lg space-y-1">
                           <div><strong>Wind Direction:</strong> {Math.round(normalizeAngle(windDirNum || 0))}°</div>
-                          <div><strong>Outbound Course:</strong> {Math.round(results.outboundCourse)}°</div>
-                          <div className="pt-2">Angle difference = {Math.round(absLegDiff)}°</div>
-                          {absLegDiff > 90 && (
-                            <div className="space-y-1">
-                              <div className="text-sm text-gray-600 dark:text-neutral-400 pt-2">
-                                More than 90°, use smaller angle:
-                              </div>
-                              <div>180° - {Math.round(absLegDiff)}° = {Math.round(angleWindToCourse)}°</div>
-                            </div>
-                          )}
-                          <div className="pt-2 text-sm text-gray-600 dark:text-neutral-400">
-                            {isHeadwind ? '→ Headwind (slows you down)' : '→ Tailwind (speeds you up)'}
-                          </div>
+                          <div><strong>Outbound Heading:</strong> {Math.round(results.outboundCourse)}°</div>
+                          <div className="pt-2">Angle from tail: {Math.round(results.timingAngleFromTail)}°</div>
+                          <div>Angle from head: {Math.round(results.timingAngleFromHead)}°</div>
+                          <div className="pt-2">→ <strong>{isTailwind ? 'Tailwind' : 'Headwind'}</strong> (effective angle = {Math.round(effectiveAngle)}°)</div>
                         </div>
                       </div>
 
                       <div className="border border-gray-200 dark:border-neutral-600 rounded-xl p-5 mb-4">
-                        <h3 className="mt-0 mb-3 text-lg font-semibold">Step 2 — Quarter-clock method</h3>
+                        <h3 className="mt-0 mb-3 text-lg font-semibold">Step 2 — Timing clock method</h3>
                         <div className="bg-gray-50 dark:bg-neutral-800/50 p-4 rounded-lg">
-                          <div className="mb-3"><strong>Clock rules (round to closest):</strong></div>
+                          <div className="mb-3"><strong>Timing clock rules:</strong></div>
                           <div className="space-y-0.5">
-                            <div>• Closest to 15° → ¼ component</div>
-                            <div>• Closest to 30° → ½ component</div>
-                            <div>• Closest to 45° → ¾ component</div>
-                            <div>• Closest to 60°+ → Full component</div>
+                            <div>• 0–30° → Full wind effect</div>
+                            <div>• 30–60° → Half wind effect</div>
+                            <div>• 60–90° → No timing effect (crosswind)</div>
                           </div>
                           <div className="pt-3 space-y-1">
-                            <div>Angle = {Math.round(angleWindToCourse)}° → {factorLabel.replace(/\s*\(.*?\)/, '')}</div>
-                            <div>Wind Speed = {Math.round(windSpdNum)} kt</div>
-                            {factor === 1.0 ? (
-                              <div className="pt-2">Crosswind = <strong>{Math.round(component)} kt</strong></div>
-                            ) : (
-                              <>
-                                <div className="pt-2">Crosswind = {Math.round(windSpdNum)} × {factor.toFixed(2)}</div>
-                                <div>= <strong>{Math.round(component)} kt</strong></div>
-                              </>
-                            )}
+                            <div>Effective angle: {Math.round(effectiveAngle)}° → <strong>{timingLabel}</strong></div>
+                            <div className="pt-2">Along-track wind = {Math.round(windSpdNum)} kt × {timingFactor.toFixed(1)}</div>
+                            {timingFactor > 0 && <div>= <strong>{Math.round(alongTrackWind)} kt</strong></div>}
                           </div>
                         </div>
                       </div>
 
                       <div className="border border-gray-200 dark:border-neutral-600 rounded-xl p-5">
-                        <h3 className="mt-0 mb-3 text-lg font-semibold">Step 3 — Adjust timing</h3>
+                        <h3 className="mt-0 mb-3 text-lg font-semibold">Step 3 — Calculate final time</h3>
                         <div className="bg-gray-50 dark:bg-neutral-800/50 p-4 rounded-lg space-y-1">
-                          <div>Standard outbound time = 60 seconds</div>
-                          <div className="pt-2">Wind effect = {isHeadwind ? '-' : '+'}{Math.round(Math.abs(component))} seconds</div>
-                          <div className="text-sm text-gray-600 dark:text-neutral-400">({isHeadwind ? 'Headwind slows you down, so subtract to fly longer' : 'Tailwind speeds you up, so add to fly shorter'})</div>
-                          <div className="pt-2">Final time = 60 {isHeadwind ? '-' : '+'} {Math.round(Math.abs(component))}</div>
+                          <div>Standard time = 60 seconds</div>
+                          <div className="pt-2">Timing correction = {timingCorrection >= 0 ? '+' : ''}{Math.round(timingCorrection)} seconds</div>
+                          <div className="text-sm text-gray-600 dark:text-neutral-400">({isTailwind ? 'Tailwind: subtract time (fly shorter)' : 'Headwind: add time (fly longer)'})</div>
+                          <div className="pt-2">Final time = 60 {timingCorrection >= 0 ? '+' : ''} ({Math.round(timingCorrection)})</div>
                           <div>= <strong>{results.outboundTime} seconds</strong></div>
                         </div>
                       </div>
