@@ -430,32 +430,31 @@ const HoldingCalculator = () => {
 
               {/* GATE 1 */}
               <ResultCard
-                title="Gate 1"
-                value={`${Math.round(results.gate1Heading)}°M`}
+                title="Gate 1 radial"
+                value={`${Math.round(results.gate1Heading)}°`}
                 expanded={!!expanded.gate1}
                 onToggle={() => toggleExpanded("gate1")}
-                subtitle="At 90° through turn: check radial and adjust bank."
+                subtitle="At 90° through turn: should be crossing this radial."
               >
                 <div className="text-sm leading-relaxed text-gray-700 dark:text-neutral-200">
                   <div className="border border-gray-200 dark:border-neutral-600 rounded-xl p-5 mb-4">
-                    <h3 className="mt-0 mb-3 text-lg font-semibold">Step 1 — When to check</h3>
+                    <h3 className="mt-0 mb-3 text-lg font-semibold">Step 1 — Calculate Gate 1 radial</h3>
                     <div className="bg-gray-50 dark:bg-neutral-800/50 p-4 rounded-lg space-y-1">
-                      <div><strong>Inbound heading:</strong> {Math.round(results.inboundHeading)}°</div>
-                      <div><strong>After 90° turn:</strong> {Math.round(results.gate1Heading)}°</div>
-                      <div className="pt-2">At heading <strong>{Math.round(results.gate1Heading)}°</strong>, check radial position:</div>
-                      <div className="pt-2">• <strong>Left of radial?</strong> → Tighten turn (more bank)</div>
-                      <div>• <strong>Right of radial?</strong> → Shallow turn (less bank)</div>
+                      <div><strong>Outbound QDR (radial):</strong> {Math.round(results.outboundCourse)}°</div>
+                      <div className="pt-2">Gate 1 radial = Outbound QDR - 30°</div>
+                      <div>= {Math.round(results.outboundCourse)}° - 30°</div>
+                      <div>= <strong>{Math.round(results.gate1Heading)}°</strong></div>
                     </div>
                   </div>
 
                   <div className="border border-gray-200 dark:border-neutral-600 rounded-xl p-5">
-                    <h3 className="mt-0 mb-3 text-lg font-semibold">Step 2 — Target</h3>
+                    <h3 className="mt-0 mb-3 text-lg font-semibold">Step 2 — Use at 90° through turn</h3>
                     <div className="bg-gray-50 dark:bg-neutral-800/50 p-4 rounded-lg space-y-1">
-                      <div><strong>Goal:</strong> Roll out <strong>30° off</strong> the outbound track</div>
-                      <div>Outbound course: {Math.round(results.outboundCourse)}°</div>
-                      <div>Target rollout: ~<strong>{Math.round(normalizeAngle(results.outboundCourse + 30))}°</strong></div>
-                      <div className="pt-2">This is predictive — don't wait for CDI!</div>
-                      <div className="pt-2">✅ <strong>Result:</strong> Perfect outbound leg setup</div>
+                      <div>When you've turned <strong>90° from inbound heading</strong>:</div>
+                      <div className="pt-2">Check if you're crossing radial <strong>{Math.round(results.gate1Heading)}°</strong></div>
+                      <div className="pt-2">• <strong>Left of radial?</strong> → Tighten turn (more bank)</div>
+                      <div>• <strong>Right of radial?</strong> → Shallow turn (less bank)</div>
+                      <div className="pt-2">✅ <strong>Goal:</strong> Roll out 30° off outbound track</div>
                     </div>
                   </div>
                 </div>
@@ -463,32 +462,31 @@ const HoldingCalculator = () => {
 
               {/* GATE 2 */}
               <ResultCard
-                title="Gate 2"
-                value={`${Math.round(results.gate2Heading)}°M`}
+                title="Gate 2 radial"
+                value={`${Math.round(results.gate2Heading)}°`}
                 expanded={!!expanded.gate2}
                 onToggle={() => toggleExpanded("gate2")}
-                subtitle="At 60° before inbound: check radial and roll out 10° early."
+                subtitle="At 60° before inbound: should be on this radial."
               >
                 <div className="text-sm leading-relaxed text-gray-700 dark:text-neutral-200">
                   <div className="border border-gray-200 dark:border-neutral-600 rounded-xl p-5 mb-4">
-                    <h3 className="mt-0 mb-3 text-lg font-semibold">Step 1 — When to check</h3>
+                    <h3 className="mt-0 mb-3 text-lg font-semibold">Step 1 — Calculate Gate 2 radial</h3>
                     <div className="bg-gray-50 dark:bg-neutral-800/50 p-4 rounded-lg space-y-1">
-                      <div><strong>Inbound course:</strong> {Math.round(normalizeAngle(inboundCourseNum || 0))}°</div>
-                      <div><strong>60° before inbound:</strong> {Math.round(normalizeAngle((inboundCourseNum || 0) + 60))}°</div>
-                      <div className="pt-2">At heading <strong>{Math.round(normalizeAngle((inboundCourseNum || 0) + 60))}°</strong>, check radial:</div>
-                      <div className="pt-2">• <strong>Overshooting?</strong> (radial inside) → More bank</div>
-                      <div>• <strong>Undershooting?</strong> (radial outside) → Less bank</div>
+                      <div><strong>Inbound QDM (course):</strong> {Math.round(normalizeAngle(inboundCourseNum || 0))}°</div>
+                      <div className="pt-2">Gate 2 radial = Inbound QDM</div>
+                      <div>= <strong>{Math.round(results.gate2Heading)}°</strong></div>
                     </div>
                   </div>
 
                   <div className="border border-gray-200 dark:border-neutral-600 rounded-xl p-5">
-                    <h3 className="mt-0 mb-3 text-lg font-semibold">Step 2 — Target rollout</h3>
+                    <h3 className="mt-0 mb-3 text-lg font-semibold">Step 2 — Use at 60° before inbound</h3>
                     <div className="bg-gray-50 dark:bg-neutral-800/50 p-4 rounded-lg space-y-1">
-                      <div><strong>Goal:</strong> Roll out <strong>10° before</strong> inbound course</div>
-                      <div className="pt-2">Inbound course: {Math.round(normalizeAngle(inboundCourseNum || 0))}°</div>
-                      <div>Target rollout: <strong>{Math.round(results.gate2Heading)}°</strong></div>
-                      <div className="pt-2">CDI will center naturally as you align</div>
-                      <div className="pt-2">✅ <strong>Result:</strong> Perfect inbound, no overshoot!</div>
+                      <div>When you have <strong>60° of heading left</strong> before inbound course:</div>
+                      <div className="pt-2">Check if you're on radial <strong>{Math.round(results.gate2Heading)}°</strong></div>
+                      <div className="pt-2">• <strong>Overshooting?</strong> (radial inside) → More bank</div>
+                      <div>• <strong>Undershooting?</strong> (radial outside) → Less bank</div>
+                      <div className="pt-2">✅ <strong>Goal:</strong> Roll out 10° before inbound course</div>
+                      <div>Target rollout heading: <strong>{Math.round(normalizeAngle((inboundCourseNum || 0) - 10))}°</strong></div>
                     </div>
                   </div>
                 </div>

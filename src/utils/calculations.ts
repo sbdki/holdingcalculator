@@ -260,13 +260,15 @@ export function calculateHoldingPattern(
   let outboundTime = 60 + timingCorrection;
   outboundTime = Math.max(10, Math.min(180, outboundTime));
   
-  // Calculate Gate headings
-  // Gate 1: 90° through the outbound turn from inbound heading
-  // Start at inbound heading, turn 90° right (standard rate turn right)
-  const gate1Heading = normalizeAngle(inboundHeading + 90);
+  // Calculate Gate radials (NOT headings!)
+  // Gate 1 radial: Outbound QDR - 30°
+  // This is the radial you should be crossing at Gate 1 checkpoint
+  const gate1Radial = normalizeAngle(outboundCourse - 30);
   
-  // Gate 2: 10° before inbound course (roll out shallow for CDI centering)
-  const gate2Heading = normalizeAngle(inboundCourseNorm - 10);
+  // Gate 2 radial: Inbound QDM (course itself)
+  // At Gate 2, you should be 10° off the inbound course heading-wise,
+  // but the radial reference is the inbound course
+  const gate2Radial = inboundCourseNorm;
   
   return {
     outboundCourse,
@@ -289,8 +291,8 @@ export function calculateHoldingPattern(
     timingIsTailwind: isTailwind,
     timingEffectiveAngle: effectiveAngle,
     timingAlongTrackWind: alongTrackWind,
-    // Gate headings
-    gate1Heading,
-    gate2Heading,
+    // Gate radials
+    gate1Heading: gate1Radial,
+    gate2Heading: gate2Radial,
   };
 }
