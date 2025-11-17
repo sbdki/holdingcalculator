@@ -152,6 +152,9 @@ export interface HoldingCalculation {
   timingIsTailwind: boolean;
   timingEffectiveAngle: number;
   timingAlongTrackWind: number;
+  // Gate headings
+  gate1Heading: number;
+  gate2Heading: number;
 }
 
 export function calculateHoldingPattern(
@@ -257,6 +260,14 @@ export function calculateHoldingPattern(
   let outboundTime = 60 + timingCorrection;
   outboundTime = Math.max(10, Math.min(180, outboundTime));
   
+  // Calculate Gate headings
+  // Gate 1: 90° through the outbound turn from inbound heading
+  // Start at inbound heading, turn 90° right (standard rate turn right)
+  const gate1Heading = normalizeAngle(inboundHeading + 90);
+  
+  // Gate 2: 10° before inbound course (roll out shallow for CDI centering)
+  const gate2Heading = normalizeAngle(inboundCourseNorm - 10);
+  
   return {
     outboundCourse,
     singleDrift,
@@ -278,5 +289,8 @@ export function calculateHoldingPattern(
     timingIsTailwind: isTailwind,
     timingEffectiveAngle: effectiveAngle,
     timingAlongTrackWind: alongTrackWind,
+    // Gate headings
+    gate1Heading,
+    gate2Heading,
   };
 }

@@ -32,6 +32,9 @@ export interface HoldingResults {
   timingIsTailwind: boolean;
   timingEffectiveAngle: number;
   timingAlongTrackWind: number;
+  // Gate headings
+  gate1Heading: number;
+  gate2Heading: number;
 }
 
 export interface InputFieldProps {

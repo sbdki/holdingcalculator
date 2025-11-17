@@ -431,29 +431,31 @@ const HoldingCalculator = () => {
               {/* GATE 1 */}
               <ResultCard
                 title="Gate 1"
-                value="90° turn → 30° target"
+                value={`${Math.round(results.gate1Heading)}°M`}
                 expanded={!!expanded.gate1}
                 onToggle={() => toggleExpanded("gate1")}
-                subtitle="Self-correct your outbound turn for perfect alignment."
+                subtitle="At 90° through turn: check radial and adjust bank."
               >
                 <div className="text-sm leading-relaxed text-gray-700 dark:text-neutral-200">
                   <div className="border border-gray-200 dark:border-neutral-600 rounded-xl p-5 mb-4">
-                    <h3 className="mt-0 mb-3 text-lg font-semibold">Step 1 — Start outbound turn</h3>
+                    <h3 className="mt-0 mb-3 text-lg font-semibold">Step 1 — When to check</h3>
                     <div className="bg-gray-50 dark:bg-neutral-800/50 p-4 rounded-lg space-y-1">
-                      <div><strong>Purpose:</strong> Set up for outbound track alignment</div>
-                      <div className="pt-2">When you've completed <strong>90° of turn</strong> from the original heading:</div>
-                      <div className="pt-2">• Check your position relative to inbound radial</div>
-                      <div>• <strong>Left of radial?</strong> → Tighten turn (more bank)</div>
+                      <div><strong>Inbound heading:</strong> {Math.round(results.inboundHeading)}°</div>
+                      <div><strong>After 90° turn:</strong> {Math.round(results.gate1Heading)}°</div>
+                      <div className="pt-2">At heading <strong>{Math.round(results.gate1Heading)}°</strong>, check radial position:</div>
+                      <div className="pt-2">• <strong>Left of radial?</strong> → Tighten turn (more bank)</div>
                       <div>• <strong>Right of radial?</strong> → Shallow turn (less bank)</div>
                     </div>
                   </div>
 
                   <div className="border border-gray-200 dark:border-neutral-600 rounded-xl p-5">
-                    <h3 className="mt-0 mb-3 text-lg font-semibold">Step 2 — Target rollout</h3>
+                    <h3 className="mt-0 mb-3 text-lg font-semibold">Step 2 — Target</h3>
                     <div className="bg-gray-50 dark:bg-neutral-800/50 p-4 rounded-lg space-y-1">
                       <div><strong>Goal:</strong> Roll out <strong>30° off</strong> the outbound track</div>
-                      <div className="pt-2">This is predictive — don't wait for CDI to move!</div>
-                      <div className="pt-2">✅ <strong>Result:</strong> Perfect setup for outbound leg</div>
+                      <div>Outbound course: {Math.round(results.outboundCourse)}°</div>
+                      <div>Target rollout: ~<strong>{Math.round(normalizeAngle(results.outboundCourse + 30))}°</strong></div>
+                      <div className="pt-2">This is predictive — don't wait for CDI!</div>
+                      <div className="pt-2">✅ <strong>Result:</strong> Perfect outbound leg setup</div>
                     </div>
                   </div>
                 </div>
@@ -462,19 +464,19 @@ const HoldingCalculator = () => {
               {/* GATE 2 */}
               <ResultCard
                 title="Gate 2"
-                value="60° left → 10° target"
+                value={`${Math.round(results.gate2Heading)}°M`}
                 expanded={!!expanded.gate2}
                 onToggle={() => toggleExpanded("gate2")}
-                subtitle="Perfect your inbound intercept without chasing CDI."
+                subtitle="At 60° before inbound: check radial and roll out 10° early."
               >
                 <div className="text-sm leading-relaxed text-gray-700 dark:text-neutral-200">
                   <div className="border border-gray-200 dark:border-neutral-600 rounded-xl p-5 mb-4">
-                    <h3 className="mt-0 mb-3 text-lg font-semibold">Step 1 — Check during turn inbound</h3>
+                    <h3 className="mt-0 mb-3 text-lg font-semibold">Step 1 — When to check</h3>
                     <div className="bg-gray-50 dark:bg-neutral-800/50 p-4 rounded-lg space-y-1">
-                      <div><strong>Purpose:</strong> Perfect the inbound intercept</div>
-                      <div className="pt-2">When you have <strong>60° of heading remaining</strong> before inbound course:</div>
-                      <div className="pt-2">• Check radial position</div>
-                      <div>• <strong>Overshooting?</strong> (radial inside) → More bank</div>
+                      <div><strong>Inbound course:</strong> {Math.round(normalizeAngle(inboundCourseNum || 0))}°</div>
+                      <div><strong>60° before inbound:</strong> {Math.round(normalizeAngle((inboundCourseNum || 0) + 60))}°</div>
+                      <div className="pt-2">At heading <strong>{Math.round(normalizeAngle((inboundCourseNum || 0) + 60))}°</strong>, check radial:</div>
+                      <div className="pt-2">• <strong>Overshooting?</strong> (radial inside) → More bank</div>
                       <div>• <strong>Undershooting?</strong> (radial outside) → Less bank</div>
                     </div>
                   </div>
@@ -483,10 +485,10 @@ const HoldingCalculator = () => {
                     <h3 className="mt-0 mb-3 text-lg font-semibold">Step 2 — Target rollout</h3>
                     <div className="bg-gray-50 dark:bg-neutral-800/50 p-4 rounded-lg space-y-1">
                       <div><strong>Goal:</strong> Roll out <strong>10° before</strong> inbound course</div>
-                      <div className="pt-2">Inbound course: <strong>{Math.round(normalizeAngle(inboundCourseNum || 0))}°</strong></div>
-                      <div>Target rollout: <strong>{Math.round(normalizeAngle((inboundCourseNum || 0) - 10))}°</strong></div>
+                      <div className="pt-2">Inbound course: {Math.round(normalizeAngle(inboundCourseNum || 0))}°</div>
+                      <div>Target rollout: <strong>{Math.round(results.gate2Heading)}°</strong></div>
                       <div className="pt-2">CDI will center naturally as you align</div>
-                      <div className="pt-2">✅ <strong>Result:</strong> Perfect inbound alignment, no overshoot!</div>
+                      <div className="pt-2">✅ <strong>Result:</strong> Perfect inbound, no overshoot!</div>
                     </div>
                   </div>
                 </div>
