@@ -265,10 +265,11 @@ export function calculateHoldingPattern(
   // This is the radial you should be crossing at Gate 1 checkpoint
   const gate1Radial = normalizeAngle(outboundCourse - 30);
   
-  // Gate 2 radial: Inbound QDM (course itself)
-  // At Gate 2, you should be 10° off the inbound course heading-wise,
-  // but the radial reference is the inbound course
-  const gate2Radial = inboundCourseNorm;
+  // Gate 2 radial: Inbound QDR - 10°
+  // Inbound QDR = Inbound QDM + 180° = Outbound QDR (same thing!)
+  // So: Gate 2 radial = (Inbound QDM + 180°) - 10° = Inbound QDM + 170°
+  const inboundQDR = outboundCourse; // QDR is the reciprocal = outbound course
+  const gate2Radial = normalizeAngle(inboundQDR - 10);
   
   return {
     outboundCourse,
