@@ -440,9 +440,10 @@ const HoldingCalculator = () => {
                   <div className="border border-gray-200 dark:border-neutral-600 rounded-xl p-5 mb-4">
                     <h3 className="mt-0 mb-3 text-lg font-semibold">Step 1 — Calculate Gate 1 radial</h3>
                     <div className="bg-gray-50 dark:bg-neutral-800/50 p-4 rounded-lg space-y-1">
-                      <div><strong>Outbound QDR (radial):</strong> {Math.round(results.outboundCourse)}°</div>
-                      <div className="pt-2">Gate 1 radial = Outbound QDR - 30°</div>
-                      <div>= {Math.round(results.outboundCourse)}° - 30°</div>
+                      <div><strong>Inbound QDM (course):</strong> {Math.round(normalizeAngle(inboundCourseNum || 0))}°</div>
+                      <div><strong>Inbound radial:</strong> {Math.round(normalizeAngle((inboundCourseNum || 0) - 180))}° (QDM - 180°)</div>
+                      <div className="pt-2">Gate 1 radial = Inbound radial - 30°</div>
+                      <div>= {Math.round(normalizeAngle((inboundCourseNum || 0) - 180))}° - 30°</div>
                       <div>= <strong>{Math.round(results.gate1Heading)}°</strong></div>
                     </div>
                   </div>
@@ -473,9 +474,9 @@ const HoldingCalculator = () => {
                     <h3 className="mt-0 mb-3 text-lg font-semibold">Step 1 — Calculate Gate 2 radial</h3>
                     <div className="bg-gray-50 dark:bg-neutral-800/50 p-4 rounded-lg space-y-1">
                       <div><strong>Inbound QDM (course):</strong> {Math.round(normalizeAngle(inboundCourseNum || 0))}°</div>
-                      <div><strong>Inbound QDR (radial):</strong> {Math.round(results.outboundCourse)}° (QDM + 180°)</div>
-                      <div className="pt-2">Gate 2 radial = Inbound QDR - 10°</div>
-                      <div>= {Math.round(results.outboundCourse)}° - 10°</div>
+                      <div><strong>Inbound radial:</strong> {Math.round(normalizeAngle((inboundCourseNum || 0) - 180))}° (QDM - 180°)</div>
+                      <div className="pt-2">Gate 2 radial = Inbound radial - 10°</div>
+                      <div>= {Math.round(normalizeAngle((inboundCourseNum || 0) - 180))}° - 10°</div>
                       <div>= <strong>{Math.round(results.gate2Heading)}°</strong></div>
                     </div>
                   </div>
