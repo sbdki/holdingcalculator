@@ -19,8 +19,8 @@ import type { HoldingResults } from "../types";
  */
 const HoldingCalculator = () => {
   // Input state
-  const [windDirection, setWindDirection] = useState<string>("170");
-  const [windSpeed, setWindSpeed] = useState<string>("16");
+  const [windDirection, setWindDirection] = useState<string>("180");
+  const [windSpeed, setWindSpeed] = useState<string>("13");
   const [inboundCourse, setInboundCourse] = useState<string>("48");
   const [tas, setTas] = useState<string>("120");
   const [turnDirection, setTurnDirection] = useState<"right" | "left">("right");
