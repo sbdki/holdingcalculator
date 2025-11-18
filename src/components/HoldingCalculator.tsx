@@ -482,24 +482,14 @@ const HoldingCalculator = () => {
                   </div>
 
                   <div className="border border-gray-200 dark:border-neutral-600 rounded-xl p-5">
-                    <h3 className="mt-0 mb-3 text-lg font-semibold">Step 2 — When to check Gate 1</h3>
+                    <h3 className="mt-0 mb-3 text-lg font-semibold">Step 2 — How to use Gate 1</h3>
                     <div className="bg-gray-50 dark:bg-neutral-800/50 p-4 rounded-lg space-y-1">
-                      <div><strong>Inbound heading:</strong> {Math.round(results.inboundHeading)}°</div>
-                      <div><strong>Turn direction:</strong> {turnDirection === "right" ? "Right (standard)" : "Left"}</div>
-                      {(() => {
-                        const checkHeading = turnDirection === "right" 
-                          ? normalizeAngle(results.inboundHeading + 90)
-                          : normalizeAngle(results.inboundHeading - 90);
-                        return (
-                          <>
-                            <div><strong>Check at heading:</strong> {Math.round(checkHeading)}° (90° through turn)</div>
-                            <div className="pt-2">At heading <strong>{Math.round(checkHeading)}°</strong>, check if you're crossing radial <strong>{Math.round(results.gate1Heading)}°</strong></div>
-                            <div className="pt-2">• <strong>Left of radial?</strong> → Tighten turn (more bank)</div>
-                            <div>• <strong>Right of radial?</strong> → Shallow turn (less bank)</div>
-                            <div className="pt-2">✅ <strong>Goal:</strong> Roll out 30° off outbound track</div>
-                          </>
-                        );
-                      })()}
+                      <div>During the outbound turn (approximately <strong>90° through the turn</strong>):</div>
+                      <div className="pt-2">Check if you're crossing radial <strong>{Math.round(results.gate1Heading)}°</strong></div>
+                      <div className="pt-2">• <strong>Left of radial?</strong> → Tighten turn (more bank)</div>
+                      <div>• <strong>Right of radial?</strong> → Shallow turn (less bank)</div>
+                      <div className="pt-2">✅ <strong>Goal:</strong> Roll out 30° off outbound track</div>
+                      <div className="pt-2 text-gray-600 dark:text-neutral-400">This is predictive — don't wait for CDI to center!</div>
                     </div>
                   </div>
                 </div>
