@@ -23,6 +23,7 @@ const HoldingCalculator = () => {
   const [windSpeed, setWindSpeed] = useState<string>("16");
   const [inboundCourse, setInboundCourse] = useState<string>("48");
   const [tas, setTas] = useState<string>("120");
+  const [turnDirection, setTurnDirection] = useState<"right" | "left">("right");
 
   // UI state
   const [error, setError] = useState<string | null>(null);
@@ -105,6 +106,38 @@ const HoldingCalculator = () => {
               onChange={setTas}
             />
           </div>
+          
+          {/* Turn Direction Selector */}
+          <div className="mt-4">
+            <label className="block text-xs font-medium text-gray-700 dark:text-neutral-300 mb-2">
+              TURN DIRECTION
+            </label>
+            <div className="flex gap-4">
+              <label className="flex items-center cursor-pointer">
+                <input
+                  type="radio"
+                  name="turnDirection"
+                  value="right"
+                  checked={turnDirection === "right"}
+                  onChange={(e) => setTurnDirection(e.target.value as "right" | "left")}
+                  className="mr-2"
+                />
+                <span className="text-sm text-gray-900 dark:text-neutral-100">Right turn (standard)</span>
+              </label>
+              <label className="flex items-center cursor-pointer">
+                <input
+                  type="radio"
+                  name="turnDirection"
+                  value="left"
+                  checked={turnDirection === "left"}
+                  onChange={(e) => setTurnDirection(e.target.value as "right" | "left")}
+                  className="mr-2"
+                />
+                <span className="text-sm text-gray-900 dark:text-neutral-100">Left turn</span>
+              </label>
+            </div>
+          </div>
+          
           <div className="mt-4 flex flex-wrap items-center gap-3">
             <button
               type="button"
@@ -485,12 +518,25 @@ const HoldingCalculator = () => {
                     <h3 className="mt-0 mb-3 text-lg font-semibold">Step 2 — When to check Gate 2</h3>
                     <div className="bg-gray-50 dark:bg-neutral-800/50 p-4 rounded-lg space-y-1">
                       <div><strong>Inbound course:</strong> {Math.round(normalizeAngle(inboundCourseNum || 0))}°</div>
-                      <div><strong>Check at heading:</strong> {Math.round(normalizeAngle((inboundCourseNum || 0) - 60))}° (60° before inbound)</div>
-                      <div className="pt-2">At heading <strong>{Math.round(normalizeAngle((inboundCourseNum || 0) - 60))}°</strong>, check if you're on radial <strong>{Math.round(results.gate2Heading)}°</strong></div>
-                      <div className="pt-2">• <strong>Overshooting?</strong> (radial inside) → More bank</div>
-                      <div>• <strong>Undershooting?</strong> (radial outside) → Less bank</div>
-                      <div className="pt-2">✅ <strong>Goal:</strong> Roll out 10° before inbound course</div>
-                      <div>Target rollout heading: <strong>{Math.round(normalizeAngle((inboundCourseNum || 0) - 10))}°</strong></div>
+                      <div><strong>Turn direction:</strong> {turnDirection === "right" ? "Right (standard)" : "Left"}</div>
+                      {(() => {
+                        const checkHeading = turnDirection === "right" 
+                          ? normalizeAngle((inboundCourseNum || 0) - 60)
+                          : normalizeAngle((inboundCourseNum || 0) + 60);
+                        const rolloutHeading = turnDirection === "right"
+                          ? normalizeAngle((inboundCourseNum || 0) - 10)
+                          : normalizeAngle((inboundCourseNum || 0) + 10);
+                        return (
+                          <>
+                            <div><strong>Check at heading:</strong> {Math.round(checkHeading)}° (60° before inbound)</div>
+                            <div className="pt-2">At heading <strong>{Math.round(checkHeading)}°</strong>, check if you're on radial <strong>{Math.round(results.gate2Heading)}°</strong></div>
+                            <div className="pt-2">• <strong>Overshooting?</strong> (radial inside) → More bank</div>
+                            <div>• <strong>Undershooting?</strong> (radial outside) → Less bank</div>
+                            <div className="pt-2">✅ <strong>Goal:</strong> Roll out 10° before inbound course</div>
+                            <div>Target rollout heading: <strong>{Math.round(rolloutHeading)}°</strong></div>
+                          </>
+                        );
+                      })()}
                     </div>
                   </div>
                 </div>
