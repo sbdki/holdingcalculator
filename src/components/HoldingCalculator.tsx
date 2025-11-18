@@ -495,17 +495,17 @@ const HoldingCalculator = () => {
                 </div>
               </ResultCard>
 
-              {/* GATE 2 */}
+              {/* GATE 2 RADIAL */}
               <ResultCard
                 title="Gate 2 radial"
                 value={`${Math.round(results.gate2Heading)}°`}
-                expanded={!!expanded.gate2}
-                onToggle={() => toggleExpanded("gate2")}
-                subtitle="At 60° before inbound: should be on this radial."
+                expanded={!!expanded.gate2radial}
+                onToggle={() => toggleExpanded("gate2radial")}
+                subtitle="Radial to check at Gate 2."
               >
                 <div className="text-sm leading-relaxed text-gray-700 dark:text-neutral-200">
-                  <div className="border border-gray-200 dark:border-neutral-600 rounded-xl p-5 mb-4">
-                    <h3 className="mt-0 mb-3 text-lg font-semibold">Step 1 — Calculate Gate 2 radial</h3>
+                  <div className="border border-gray-200 dark:border-neutral-600 rounded-xl p-5">
+                    <h3 className="mt-0 mb-3 text-lg font-semibold">Calculate Gate 2 radial</h3>
                     <div className="bg-gray-50 dark:bg-neutral-800/50 p-4 rounded-lg space-y-1">
                       <div><strong>Inbound QDM (course):</strong> {Math.round(normalizeAngle(inboundCourseNum || 0))}°</div>
                       <div><strong>Inbound radial:</strong> {Math.round(normalizeAngle((inboundCourseNum || 0) - 180))}° (QDM - 180°)</div>
@@ -514,9 +514,25 @@ const HoldingCalculator = () => {
                       <div>= <strong>{Math.round(results.gate2Heading)}°</strong></div>
                     </div>
                   </div>
+                </div>
+              </ResultCard>
 
+              {/* GATE 2 HEADING */}
+              <ResultCard
+                title="Gate 2 heading"
+                value={(() => {
+                  const checkHeading = turnDirection === "right" 
+                    ? normalizeAngle((inboundCourseNum || 0) - 60)
+                    : normalizeAngle((inboundCourseNum || 0) + 60);
+                  return `${Math.round(checkHeading)}°`;
+                })()}
+                expanded={!!expanded.gate2heading}
+                onToggle={() => toggleExpanded("gate2heading")}
+                subtitle="When to check Gate 2 radial."
+              >
+                <div className="text-sm leading-relaxed text-gray-700 dark:text-neutral-200">
                   <div className="border border-gray-200 dark:border-neutral-600 rounded-xl p-5">
-                    <h3 className="mt-0 mb-3 text-lg font-semibold">Step 2 — When to check Gate 2</h3>
+                    <h3 className="mt-0 mb-3 text-lg font-semibold">When to check Gate 2</h3>
                     <div className="bg-gray-50 dark:bg-neutral-800/50 p-4 rounded-lg space-y-1">
                       <div><strong>Inbound course:</strong> {Math.round(normalizeAngle(inboundCourseNum || 0))}°</div>
                       <div><strong>Turn direction:</strong> {turnDirection === "right" ? "Right (standard)" : "Left"}</div>
@@ -529,7 +545,7 @@ const HoldingCalculator = () => {
                           : normalizeAngle((inboundCourseNum || 0) + 10);
                         return (
                           <>
-                            <div><strong>Check at heading:</strong> {Math.round(checkHeading)}° (60° before inbound)</div>
+                            <div className="pt-2"><strong>Check at heading:</strong> {Math.round(checkHeading)}° (60° before inbound)</div>
                             <div className="pt-2">At heading <strong>{Math.round(checkHeading)}°</strong>, check if you're on radial <strong>{Math.round(results.gate2Heading)}°</strong></div>
                             <div className="pt-2">• <strong>Overshooting?</strong> (radial inside) → More bank</div>
                             <div>• <strong>Undershooting?</strong> (radial outside) → Less bank</div>
