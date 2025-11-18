@@ -485,8 +485,8 @@ const HoldingCalculator = () => {
                     <h3 className="mt-0 mb-3 text-lg font-semibold">Step 2 — When to check Gate 2</h3>
                     <div className="bg-gray-50 dark:bg-neutral-800/50 p-4 rounded-lg space-y-1">
                       <div><strong>Inbound course:</strong> {Math.round(normalizeAngle(inboundCourseNum || 0))}°</div>
-                      <div><strong>Check at heading:</strong> {Math.round(normalizeAngle((inboundCourseNum || 0) + 60))}° (60° before inbound)</div>
-                      <div className="pt-2">At heading <strong>{Math.round(normalizeAngle((inboundCourseNum || 0) + 60))}°</strong>, check if you're on radial <strong>{Math.round(results.gate2Heading)}°</strong></div>
+                      <div><strong>Check at heading:</strong> {Math.round(normalizeAngle((inboundCourseNum || 0) - 60))}° (60° before inbound)</div>
+                      <div className="pt-2">At heading <strong>{Math.round(normalizeAngle((inboundCourseNum || 0) - 60))}°</strong>, check if you're on radial <strong>{Math.round(results.gate2Heading)}°</strong></div>
                       <div className="pt-2">• <strong>Overshooting?</strong> (radial inside) → More bank</div>
                       <div>• <strong>Undershooting?</strong> (radial outside) → Less bank</div>
                       <div className="pt-2">✅ <strong>Goal:</strong> Roll out 10° before inbound course</div>
