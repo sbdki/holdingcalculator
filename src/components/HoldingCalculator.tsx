@@ -481,7 +481,7 @@ const HoldingCalculator = () => {
                     </div>
                   </div>
 
-                  <div className="border border-gray-200 dark:border-neutral-600 rounded-xl p-5">
+                  <div className="border border-gray-200 dark:border-neutral-600 rounded-xl p-5 mb-4">
                     <h3 className="mt-0 mb-3 text-lg font-semibold">Step 2 — How to use Gate 1</h3>
                     <div className="bg-gray-50 dark:bg-neutral-800/50 p-4 rounded-lg space-y-1">
                       <div>During the outbound turn (approximately <strong>90° through the turn</strong>):</div>
@@ -490,6 +490,29 @@ const HoldingCalculator = () => {
                       <div>• <strong>Right of radial?</strong> → Shallow turn (less bank)</div>
                       <div className="pt-2">✅ <strong>Goal:</strong> Roll out 30° off outbound track</div>
                       <div className="pt-2 text-gray-600 dark:text-neutral-400">This is predictive — don't wait for CDI to center!</div>
+                    </div>
+                  </div>
+
+                  <div className="border border-gray-200 dark:border-neutral-600 rounded-xl p-5">
+                    <h3 className="mt-0 mb-3 text-lg font-semibold">Step 3 — Timing corrections</h3>
+                    <div className="bg-gray-50 dark:bg-neutral-800/50 p-4 rounded-lg space-y-3">
+                      <div>
+                        <div className="font-semibold mb-1">Reach Gate 1 AFTER timer?</div>
+                        <div className="pl-3 space-y-0.5 text-gray-700 dark:text-neutral-300">
+                          <div>• Likely wide</div>
+                          <div>• Expect undershooting inbound course</div>
+                          <div>• Correct at Gate 2</div>
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <div className="font-semibold mb-1">Reach Gate 1 BEFORE timer?</div>
+                        <div className="pl-3 space-y-0.5 text-gray-700 dark:text-neutral-300">
+                          <div>• Likely narrow</div>
+                          <div>• May turn along radial with remaining time to widen out</div>
+                          <div>• Expect to overshoot inbound track at Gate 2</div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -531,7 +554,7 @@ const HoldingCalculator = () => {
                 subtitle="When to check Gate 2 radial."
               >
                 <div className="text-sm leading-relaxed text-gray-700 dark:text-neutral-200">
-                  <div className="border border-gray-200 dark:border-neutral-600 rounded-xl p-5">
+                  <div className="border border-gray-200 dark:border-neutral-600 rounded-xl p-5 mb-4">
                     <h3 className="mt-0 mb-3 text-lg font-semibold">When to check Gate 2</h3>
                     <div className="bg-gray-50 dark:bg-neutral-800/50 p-4 rounded-lg space-y-1">
                       <div><strong>Inbound course:</strong> {Math.round(normalizeAngle(inboundCourseNum || 0))}°</div>
@@ -547,13 +570,35 @@ const HoldingCalculator = () => {
                           <>
                             <div className="pt-2"><strong>Check at heading:</strong> {Math.round(checkHeading)}° (60° before inbound)</div>
                             <div className="pt-2">At heading <strong>{Math.round(checkHeading)}°</strong>, check if you're on radial <strong>{Math.round(results.gate2Heading)}°</strong></div>
-                            <div className="pt-2">• <strong>Overshooting?</strong> (radial inside) → More bank</div>
-                            <div>• <strong>Undershooting?</strong> (radial outside) → Less bank</div>
                             <div className="pt-2">✅ <strong>Goal:</strong> Roll out 10° before inbound course</div>
                             <div>Target rollout heading: <strong>{Math.round(rolloutHeading)}°</strong></div>
                           </>
                         );
                       })()}
+                    </div>
+                  </div>
+
+                  <div className="border border-gray-200 dark:border-neutral-600 rounded-xl p-5">
+                    <h3 className="mt-0 mb-3 text-lg font-semibold">Corrections at Gate 2</h3>
+                    <div className="bg-gray-50 dark:bg-neutral-800/50 p-4 rounded-lg space-y-3">
+                      <div>
+                        <div className="font-semibold mb-1">Undershooting</div>
+                        <div className="pl-3 space-y-0.5 text-gray-700 dark:text-neutral-300">
+                          <div>• Radial is below the intended 10° inbound radial</div>
+                          <div>• Roll wings level to intercept, then roll back in</div>
+                          <div>• Example: Gate 2 is 260° and you are at 250° on a right turn</div>
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <div className="font-semibold mb-1">Overshooting</div>
+                        <div className="pl-3 space-y-0.5 text-gray-700 dark:text-neutral-300">
+                          <div>• Radial is above intended 10° inbound radial</div>
+                          <div>• Maintain rate 1 & intercept from non-holding side</div>
+                          <div>• Adjust outbound heading</div>
+                          <div>• Example: Gate 2 is 260° and you are at 265° on a right turn</div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
