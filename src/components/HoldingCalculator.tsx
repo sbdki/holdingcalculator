@@ -581,24 +581,35 @@ const HoldingCalculator = () => {
                   <div className="border border-gray-200 dark:border-neutral-600 rounded-xl p-5">
                     <h3 className="mt-0 mb-3 text-lg font-semibold">Corrections at Gate 2</h3>
                     <div className="bg-gray-50 dark:bg-neutral-800/50 p-4 rounded-lg space-y-3">
-                      <div>
-                        <div className="font-semibold mb-1">Undershooting</div>
-                        <div className="pl-3 space-y-0.5 text-gray-700 dark:text-neutral-300">
-                          <div>• Radial is below the intended 10° inbound radial</div>
-                          <div>• Roll wings level to intercept, then roll back in</div>
-                          <div>• Example: Gate 2 is 260° and you are at 250° on a right turn</div>
-                        </div>
-                      </div>
-                      
-                      <div>
-                        <div className="font-semibold mb-1">Overshooting</div>
-                        <div className="pl-3 space-y-0.5 text-gray-700 dark:text-neutral-300">
-                          <div>• Radial is above intended 10° inbound radial</div>
-                          <div>• Maintain rate 1 & intercept from non-holding side</div>
-                          <div>• Adjust outbound heading</div>
-                          <div>• Example: Gate 2 is 260° and you are at 265° on a right turn</div>
-                        </div>
-                      </div>
+                      {(() => {
+                        const gate2Radial = Math.round(results.gate2Heading);
+                        const undershootExample = gate2Radial - 10;
+                        const overshootExample = gate2Radial + 5;
+                        const turnType = turnDirection === "right" ? "right turn" : "left turn";
+                        
+                        return (
+                          <>
+                            <div>
+                              <div className="font-semibold mb-1">Undershooting</div>
+                              <div className="pl-3 space-y-0.5 text-gray-700 dark:text-neutral-300">
+                                <div>• Radial is below the intended 10° inbound radial</div>
+                                <div>• Roll wings level to intercept, then roll back in</div>
+                                <div>• Example: Gate 2 is {gate2Radial}° and you are at {undershootExample}° on a {turnType}</div>
+                              </div>
+                            </div>
+                            
+                            <div>
+                              <div className="font-semibold mb-1">Overshooting</div>
+                              <div className="pl-3 space-y-0.5 text-gray-700 dark:text-neutral-300">
+                                <div>• Radial is above intended 10° inbound radial</div>
+                                <div>• Maintain rate 1 & intercept from non-holding side</div>
+                                <div>• Adjust outbound heading</div>
+                                <div>• Example: Gate 2 is {gate2Radial}° and you are at {overshootExample}° on a {turnType}</div>
+                              </div>
+                            </div>
+                          </>
+                        );
+                      })()}
                     </div>
                   </div>
                 </div>
