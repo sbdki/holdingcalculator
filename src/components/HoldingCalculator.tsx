@@ -227,15 +227,9 @@ const HoldingCalculator = () => {
                             <div>Relative angle: <strong>{Math.round(results.driftRelativeAngle)}° → {clockLabel}</strong></div>
                             <div>Max Drift: <strong>{Math.round(results.maxDrift)}°</strong></div>
                             
-                            {(fraction) === 1.0 ? (
-                              <div className="pt-2">Single Drift = Max Drift × 1.0 = <strong>{Math.round(results.singleDrift)}°</strong></div>
-                            ) : (
-                              <>
-                                <div className="pt-2">Single Drift = Max Drift × {fraction === 0 ? '0' : fraction.toFixed(2)}</div>
-                                <div>= {Math.round(results.maxDrift)}° × {fraction === 0 ? '0' : fraction.toFixed(2)}</div>
-                                <div>= <strong>{Math.round(results.singleDrift)}° drift</strong></div>
-                              </>
-                            )}
+                            <div className="pt-2">Single Drift = Max Drift × {fraction === 0 || fraction === 1 ? fraction : fraction.toFixed(2)}</div>
+                            <div>= {Math.round(results.maxDrift)}° × {fraction === 0 || fraction === 1 ? fraction : fraction.toFixed(2)}</div>
+                            <div>= <strong>{Math.round(results.singleDrift)}° drift</strong></div>
                           </div>
                         </div>
                       </div>
