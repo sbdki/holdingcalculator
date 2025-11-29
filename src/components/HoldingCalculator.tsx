@@ -189,13 +189,14 @@ const HoldingCalculator = () => {
               >
                 {(() => {
                   const clockLabels: Record<number, string> = {
-                    0.25: "1/4 crosswind",
-                    0.5: "1/2 crosswind",
-                    0.75: "3/4 crosswind",
-                    1.0: "Full crosswind"
+                    0: "No drift",
+                    0.25: "1/4 drift",
+                    0.5: "1/2 drift",
+                    0.75: "3/4 drift",
+                    1.0: "Full drift"
                   };
-                  const crosswindFraction = results.driftCrosswind / windSpdNum;
-                  const clockLabel = clockLabels[crosswindFraction] || `${(crosswindFraction * 100).toFixed(0)}% crosswind`;
+                  const fraction = windSpdNum > 0 ? results.driftCrosswind / windSpdNum : 0;
+                  const clockLabel = clockLabels[fraction] || `${(fraction * 100).toFixed(0)}% drift`;
                   
                   return (
                     <div className="text-sm leading-relaxed text-gray-700 dark:text-neutral-200 space-y-4">
@@ -212,38 +213,30 @@ const HoldingCalculator = () => {
                         </div>
                       </div>
                       
-                      <div className="border border-gray-200 dark:border-neutral-600 rounded-xl p-5 mb-4">
+                      <div className="border border-gray-200 dark:border-neutral-600 rounded-xl p-5">
                         <h3 className="mt-0 mb-3 text-lg font-semibold">Step 2 — Apply clock system</h3>
                         <div className="bg-gray-50 dark:bg-neutral-800/50 p-4 rounded-lg">
-                          <div className="mb-3"><strong>Clock rules (round to closest):</strong></div>
+                          <div className="mb-3"><strong>Clock rules (applied to Max Drift):</strong></div>
                           <div className="space-y-0.5">
-                            <div>Closest to 15° → ¼ crosswind</div>
-                            <div>Closest to 30° → ½ crosswind</div>
-                            <div>Closest to 45° → ¾ crosswind</div>
-                            <div>Closest to 60°+ → Full crosswind</div>
+                            <div>Closest to 15° → ¼ drift</div>
+                            <div>Closest to 30° → ½ drift</div>
+                            <div>Closest to 45° → ¾ drift</div>
+                            <div>Closest to 60°+ → Full drift</div>
                           </div>
                           <div className="pt-3 space-y-1">
-                            <div>Relative angle: <strong>{Math.round(results.driftRelativeAngle)}° → {clockLabel.replace(/\s*\(.*?\)/, '')}</strong></div>
-                            {(results.driftCrosswind / windSpdNum) === 1.0 ? (
-                              <div className="pt-2">Crosswind = <strong>{Math.round(results.driftCrosswind)} kt</strong></div>
+                            <div>Relative angle: <strong>{Math.round(results.driftRelativeAngle)}° → {clockLabel}</strong></div>
+                            <div>Max Drift: <strong>{Math.round(results.maxDrift)}°</strong></div>
+                            
+                            {(fraction) === 1.0 ? (
+                              <div className="pt-2">Single Drift = Max Drift = <strong>{Math.round(results.singleDrift)}°</strong></div>
                             ) : (
                               <>
-                                <div className="pt-2">Crosswind = {Math.round(windSpdNum)} kt × {(results.driftCrosswind / windSpdNum).toFixed(2)}</div>
-                                <div>= <strong>{Math.round(results.driftCrosswind)} kt</strong></div>
+                                <div className="pt-2">Single Drift = Max Drift × {fraction === 0 ? '0' : fraction.toFixed(2)}</div>
+                                <div>= {Math.round(results.maxDrift)}° × {fraction === 0 ? '0' : fraction.toFixed(2)}</div>
+                                <div>= <strong>{Math.round(results.singleDrift)}° drift</strong></div>
                               </>
                             )}
                           </div>
-                        </div>
-                      </div>
-                      
-                      <div className="border border-gray-200 dark:border-neutral-600 rounded-xl p-5">
-                        <h3 className="mt-0 mb-3 text-lg font-semibold">Step 3 — Compute drift</h3>
-                        <div className="bg-gray-50 dark:bg-neutral-800/50 p-4 rounded-lg space-y-1">
-                          <div className="mb-3"><strong>Drift formula:</strong></div>
-                          <div>(60 × crosswind) ÷ TAS</div>
-                          <div className="pt-3">= (60 × {Math.round(results.driftCrosswind)}) ÷ {Math.round(tasNum)}</div>
-                          <div>= {Math.round(60 * results.driftCrosswind)} ÷ {Math.round(tasNum)}</div>
-                          <div className="pt-2">= <strong>{Math.round(results.singleDrift)}° drift</strong></div>
                         </div>
                       </div>
                     </div>
@@ -261,11 +254,11 @@ const HoldingCalculator = () => {
               >
                 <div className="text-sm leading-relaxed text-gray-700 dark:text-neutral-200">
                   <div className="border border-gray-200 dark:border-neutral-600 rounded-xl p-5">
-                    <h3 className="mt-0 mb-3 text-lg font-semibold">Step 1 — Simple rule</h3>
+                    <h3 className="mt-0 mb-3 text-lg font-semibold">Step 1 — Calculate Max Drift</h3>
                     <div className="bg-gray-50 dark:bg-neutral-800/50 p-4 rounded-lg space-y-1">
-                      <div>Wind Speed = {Math.round(windSpdNum)} kt</div>
-                      <div className="pt-2">Max Drift = Wind Speed ÷ 2</div>
-                      <div>= {Math.round(windSpdNum)} ÷ 2</div>
+                      <div>Formula: (60 × Wind Speed) ÷ TAS</div>
+                      <div className="pt-2">= (60 × {Math.round(windSpdNum)}) ÷ {Math.round(tasNum)}</div>
+                      <div>= {Math.round(60 * windSpdNum)} ÷ {Math.round(tasNum)}</div>
                       <div className="pt-2">= <strong>{Math.round(results.maxDrift)}°</strong></div>
                       <div className="text-gray-600 dark:text-neutral-400 pt-2">
                         → Maximum drift if wind was 90° crosswind

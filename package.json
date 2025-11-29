@@ -1,6 +1,6 @@
 {
   "name": "holdingcalculator",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Aviation holding pattern wind correction calculator with interactive UI",
   "type": "module",
   "scripts": {

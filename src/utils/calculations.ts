@@ -61,8 +61,8 @@ export function computeCrosswindComponent(angle: number, windSpeed: number): num
  * Steps:
  * 1. Find which leg (inbound or outbound) is closer to wind direction
  * 2. Calculate angle between wind and that leg
- * 3. Use clock system to find crosswind component
- * 4. Calculate drift: (60 × crosswind) / TAS
+ * 3. Calculate Max Drift = (60 × Wind Speed) / TAS
+ * 4. Apply clock system factor to Max Drift
  * 
  * @param windDirection - Wind direction in degrees (0-359)
  * @param inboundCourse - Inbound course in degrees (0-359)
@@ -77,7 +77,7 @@ export function computeSingleDrift(
   outboundCourse: number,
   windSpeed: number,
   tas: number
-): { drift: number; angleToInbound: number; angleToOutbound: number; usedLeg: 'inbound' | 'outbound'; relativeAngle: number; crosswind: number } {
+): { drift: number; angleToInbound: number; angleToOutbound: number; usedLeg: 'inbound' | 'outbound'; relativeAngle: number; crosswind: number; maxDrift: number } {
   // Calculate angles to both legs
   const angleToInbound = Math.abs(signedAngleDiff(windDirection, inboundCourse));
   const angleToOutbound = Math.abs(signedAngleDiff(windDirection, outboundCourse));
@@ -86,11 +86,22 @@ export function computeSingleDrift(
   const usedLeg = angleToInbound <= angleToOutbound ? 'inbound' : 'outbound';
   const relativeAngle = usedLeg === 'inbound' ? angleToInbound : angleToOutbound;
   
-  // Get crosswind component using clock system
-  const crosswind = computeCrosswindComponent(relativeAngle, windSpeed);
+  // Calculate Max Drift Angle
+  const maxDrift = tas > 0 ? (60 * windSpeed) / tas : 0;
+
+  // Get clock code factor
+  let factor = 0;
+  if (relativeAngle < 7.5) factor = 0;
+  else if (relativeAngle < 22.5) factor = 0.25;
+  else if (relativeAngle < 37.5) factor = 0.5;
+  else if (relativeAngle < 52.5) factor = 0.75;
+  else factor = 1.0;
   
-  // Calculate drift: (60 × crosswind) / TAS
-  const drift = tas > 0 ? (60 * crosswind) / tas : 0;
+  // Calculate drift: Max Drift * Factor
+  const drift = maxDrift * factor;
+  
+  // For backward compatibility/display, calculate effective crosswind component
+  const crosswind = windSpeed * factor;
   
   return {
     drift,
@@ -98,7 +109,8 @@ export function computeSingleDrift(
     angleToOutbound,
     usedLeg,
     relativeAngle,
-    crosswind
+    crosswind,
+    maxDrift
   };
 }
 
@@ -174,8 +186,8 @@ export function calculateHoldingPattern(
   const driftResult = computeSingleDrift(windDirNorm, inboundCourseNorm, outboundCourse, windSpeed, tas);
   const singleDrift = driftResult.drift;
   
-  // Calculate max drift using simple formula: half of wind velocity
-  const maxDrift = windSpeed / 2;
+  // Calculate max drift using proper aviation formula (consistent with drift calculation)
+  const maxDrift = driftResult.maxDrift;
   
   // Inbound heading: course ± single drift
   const inboundDiff = signedAngleDiff(windDirNorm, inboundCourseNorm);

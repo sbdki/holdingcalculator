@@ -178,13 +178,20 @@ holdingcalculator/
 
 ## 🧮 Calculation Methods
 
-### Single Drift (Maximum Wind Correction Angle)
+### Single Drift (Wind Correction Angle)
 
-```
-Single Drift = Wind Speed (kt) / Groundspeed (NM/min)
-```
+1. **Calculate Max Drift Angle**:
+   ```
+   Max Drift = (60 × Wind Speed) / TAS
+   ```
 
-This represents the maximum wind correction angle needed to maintain track.
+2. **Apply Clock Code Factor**:
+   Scale Max Drift based on angle between wind and leg (using 1/4, 1/2, 3/4, Full).
+   ```
+   Single Drift = Max Drift × Clock Factor
+   ```
+
+This represents the wind correction angle needed to maintain track on the inbound/outbound leg.
 
 ### Inbound Heading
 

@@ -5,6 +5,15 @@ All notable changes to the Holding Calculator project will be documented in this
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2025-11-28
+
+### Changed
+- **Simplified Single Drift Calculation Logic**:
+  - Updated `computeSingleDrift` to use `Max Drift * Clock Code Factor`.
+  - Removed explicit crosswind speed step in drift calculation flow ("There is no step 3").
+  - Aligned `Max Drift` calculation with aviation standard formula `(60 * Wind Speed) / TAS` in both calculation logic and UI display.
+  - Updated "Single Drift" UI card to reflect the new simplified 2-step process (Leg selection -> Max Drift * Factor).
+
 ## [1.1.0] - 2025-11-16
 
 ### Added
