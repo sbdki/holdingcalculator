@@ -228,7 +228,7 @@ const HoldingCalculator = () => {
                             <div>Max Drift: <strong>{Math.round(results.maxDrift)}°</strong></div>
                             
                             {(fraction) === 1.0 ? (
-                              <div className="pt-2">Single Drift = Max Drift = <strong>{Math.round(results.singleDrift)}°</strong></div>
+                              <div className="pt-2">Single Drift = Max Drift × 1.0 = <strong>{Math.round(results.singleDrift)}°</strong></div>
                             ) : (
                               <>
                                 <div className="pt-2">Single Drift = Max Drift × {fraction === 0 ? '0' : fraction.toFixed(2)}</div>
